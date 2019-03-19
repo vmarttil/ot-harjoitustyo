@@ -6,3 +6,5 @@
 
 * [gitlog.txt](https://github.com/vmarttil/ot-harjoitustyo/blob/master/laskarit/viikko1/gitlog.txt)
 * [komentorivi.txt](https://github.com/vmarttil/ot-harjoitustyo/blob/master/laskarit/viikko1/komentorivi.txt) 
+
+Tämä rivi on lisätty muutoksen aikaansaamiseksi.
