@@ -1,0 +1,113 @@
+commit 17168790a8dcd47f88f71a642fb6670445cf436d
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 22:37:07 2019 +0200
+
+    muokattu tiedostoja
+
+ tiedostoja/file2             | 0
+ tiedostoja/{file1 => file22} | 0
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 18223e475e29d47e136dddb3d35c8c4bf6f50475
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 22:33:54 2019 +0200
+
+    lisätty hakemisto
+
+ tiedostoja/file1 | 0
+ tiedostoja/file2 | 0
+ tiedostoja/file3 | 0
+ 3 files changed, 0 insertions(+), 0 deletions(-)
+
+commit 99ef7e4f9cd9e6d5e2089516b1836fa284383350
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 22:29:01 2019 +0200
+
+    muokattu lisää tekstiä
+
+ eka.txt    | 9 +--------
+ kolmas.txt | 2 +-
+ 2 files changed, 2 insertions(+), 9 deletions(-)
+
+commit a9260a25523c096d4b554407e59ff626028b90fa
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 22:26:27 2019 +0200
+
+    tiedosto nimetty uudelleen
+
+ tiedosto.txt => eka.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit 08483ce9e54e58ce0f2057fa1146b0ca6775bf33
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 22:25:27 2019 +0200
+
+    tiedosto poistettu
+
+ toinen.txt | 1 -
+ 1 file changed, 1 deletion(-)
+
+commit b88bcbcd318691a63f28c4c4865cdd4c6b1d9af8
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 22:22:15 2019 +0200
+
+    muokattu tekstiä
+
+ tiedosto.txt | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
+
+commit 88cd7c5475d550a6b8ee7a2eb4d72e33347ecc01
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 22:19:20 2019 +0200
+
+    lisätty paljon tekstiä
+
+ tiedosto.txt | 24026 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 24026 insertions(+)
+
+commit 6d835c726fc73f85193c881a89f084cc6148b4ac
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 21:58:25 2019 +0200
+
+    hakemisto lisätty
+
+ stuff/stuff_tiedosto.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit 927296db8d281a1c4fc075a3306be457e9fbfdcc
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 21:57:32 2019 +0200
+
+    lisää muutoksia
+
+ kolmas.txt | 1 +
+ toinen.txt | 1 +
+ 2 files changed, 2 insertions(+)
+
+commit d6bcc4f035cd7837703cd4d678342d9b060517b7
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 21:56:07 2019 +0200
+
+    kolmas.txt lisätty
+
+ kolmas.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit 4306f7ce719101539e42415508a00c30b668f1ad
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 21:53:40 2019 +0200
+
+    muutos ja lisäys
+
+ tiedosto.txt | 1 +
+ toinen.txt   | 0
+ 2 files changed, 1 insertion(+)
+
+commit 762c7daeb88c71d1f01eb4d75ea133790f689379
+Author: Marttila Ville J <vmarttil@melkki.cs.helsinki.fi>
+Date:   Tue Mar 19 21:49:51 2019 +0200
+
+    tiedosto.txt luotu
+
+ tiedosto.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
