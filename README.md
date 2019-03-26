@@ -11,7 +11,7 @@
 * [Unicafe-projekti](https://github.com/vmarttil/ot-harjoitustyo/tree/master/laskarit/viikko2/Unicafe)
 * [testikattavuus.png](https://github.com/vmarttil/ot-harjoitustyo/blob/master/laskarit/viikko2/testikattavuus.png)
 
-## Ohjelmointiprojekti
+## Ohjelmointiprojekti - Power Management
 
 ### Dokumentaatio
 * [Vaatimusmäärittely](https://github.com/vmarttil/ot-harjoitustyo/blob/master/documentation/vaatimusmaarittely.md)
