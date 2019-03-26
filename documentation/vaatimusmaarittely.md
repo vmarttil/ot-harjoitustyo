@@ -27,7 +27,7 @@ The main view of the application with its controls looks as follows:
 - 1 main regulator, used to adjust the total power output to the ship's systems
 
 ## Classes/Objects
-### Controls
+### Application logic
 - Fluctuator
 - Oscillator
 - Controller
