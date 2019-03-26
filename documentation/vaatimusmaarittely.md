@@ -7,7 +7,7 @@
 - works by simulating the varying stability of power conditioning from reactors to ship's power distribution system (whish is simulated inside Empty Epsilon)
 
 ## UI draft
-
+The main view of the application with its controls looks as follows:
 <img src="https://github.com/vmarttil/ot-harjoitustyo/blob/master/documentation/kayttoliittymaluonnos.jpg" width="750">
 
 ## Basic functionality
