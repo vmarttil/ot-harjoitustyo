@@ -15,7 +15,7 @@ The main view of the application with its controls looks as follows:
   - depends on the power draw: exacerbated by power draw of over 100%, mitigated by draw of under 100%
   - can change suddenly due to damage to ship's reactor (relayed from EE through http requests)
 - the stability of power conditioning, i.e. how well the power relays are calibrated to the power input from the reactors, determines the amount of power available to the ship's systems
-	-the user's task is to calibrate the relays by adjusting counterbalancing signal generators using a set of controls and oscilloscope displays, trying to maintain optimal performance
+  - the user's task is to calibrate the relays by adjusting counterbalancing signal generators using a set of controls and oscilloscope displays, trying to maintain optimal performance
 - the system regularly (every 1000 ms) updates the power level to EE using http POST requests
 - the application keeps a log of changes in power status, which is saved to a database from which log reports can be generated
 - the frequency and magnitude of fluctuation can be adjusted through a separate administration view, determining the difficulty of maintaining the balance
