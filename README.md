@@ -14,4 +14,5 @@
 ## Ohjelmointiprojekti
 
 ### Dokumentaatio
+* [Vaatimusmäärittely](https://github.com/vmarttil/ot-harjoitustyo/blob/master/documentation/vaatimusmaarittely.md)
 * [Tuntikirjanpito](https://github.com/vmarttil/ot-harjoitustyo/blob/master/documentation/tuntikirjanpito.md)
