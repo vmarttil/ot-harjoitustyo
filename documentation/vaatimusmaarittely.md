@@ -8,7 +8,7 @@
 
 ## UI draft
 
-<img src="" width="750">
+<img src="https://github.com/vmarttil/ot-harjoitustyo/blob/master/documentation/kayttoliittymaluonnos.jpg" width="750">
 
 ## Basic functionality
 - the frequency, amplitude and phase of power input, represented by a signal generator object, fluctuates randomly over time
