@@ -53,8 +53,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         
-        
-        
         lines = 1;
         // Create Power Manager
         powerManager = new domain.Manager();
@@ -63,7 +61,7 @@ public class Main extends Application {
             domain.PowerLine line = new domain.PowerLine(powerManager, i);
             powerManager.getPowerLines()[i] = line;
         }
-        
+        powerManager.startReactorService(10);
         // Create user interface
         primaryStage.setTitle("Power Management Application");
         managerPane = InitUI.createManagerPane(lines);
@@ -87,8 +85,6 @@ public class Main extends Application {
             managerPane.getChildren().add(powerLineControlBlocks[i]);
             managerPane.getChildren().add(oscilloscopes[i]);
         }
-        
-        
         
         Scene scene = new Scene(managerPane, 1200, 800);
         primaryStage.setScene(scene);

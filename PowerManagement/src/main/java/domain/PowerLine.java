@@ -25,7 +25,7 @@ public class PowerLine {
     public PowerLine(Manager manager, int number) {
         this.manager = manager;
         this.reactorLine = new Oscillator(100, 100, 0.0);
-        this.inputFluctuator = new Fluctuator(reactorLine,80,10);
+        this.inputFluctuator = new Fluctuator(reactorLine,50,10);
         this.inputAdjuster = new Oscillator(100, 100, Math.PI);
         this.outputData = new XYChart.Series<>();
         this.inputPower = 100;
