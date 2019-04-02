@@ -1,4 +1,5 @@
-# Ohjelmointiprojekti - Power Management
+# Power Management App
+Sovelluksen tarkoituksena on mallintaa a pelillisesti avaruusaluksen virranhallintajärjestelmän toimintaa. Sovellus on tarkoitettu käytettäväksi yhdessä Empty Epsilon Space Ship Simulator (http://daid.github.io/EmptyEpsilon/) -pelisovelluksen kanssa ja kommunikoi tämän soveluksen kanssa sen tarjoaman http-rajapinnan välityksellä. Sovelluksen toiminta perustuu aluksen reaktorin ja muun järjestelmän välisen virranhallintajärjestelmän laskennalliseen simulaatioon, jossa käyttäjän/pelaajan tavoitteena on tasapainottaa sekä satunnaisesti että EE-sovelluksesta saatavan palautteen perusteella vaihtelevaa virransyöttöä siten että tehohäviö reaktorista aluksen järjestelmiin on mahdollisimman pieni eivätkä virransyötön liialliset vaihtelut aiheuta vauriota aluksen järjestelmille.
 
 ## Dokumentaatio
 * [Vaatimusmäärittely](https://github.com/vmarttil/ot-harjoitustyo/blob/master/documentation/vaatimusmaarittely.md)
