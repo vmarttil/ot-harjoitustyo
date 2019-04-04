@@ -5,6 +5,7 @@
  */
 package ui;
 
+import eu.hansolo.fx.smoothcharts.SmoothedChart;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.medusa.LcdDesign;
@@ -22,6 +23,7 @@ import javafx.geometry.Orientation;
 import static javafx.geometry.Orientation.HORIZONTAL;
 import static javafx.geometry.Orientation.VERTICAL;
 import javafx.geometry.Pos;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
@@ -92,6 +94,7 @@ public class InitUI {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 Main.getPowerManager().getPowerLine(column).getInputAdjuster().setCurrentFrequency((int) Math.round((newValue.intValue() - 64) / 100.0 * baseFrequency + baseFrequency));
+                Main.getPowerManager().getPowerLine(column).updateOscilloscopeData();
             }
         });
         return frequencyControl;
@@ -104,6 +107,7 @@ public class InitUI {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 Main.getPowerManager().getPowerLine(column).getInputAdjuster().setCurrentAmplitude((int) Math.round((newValue.intValue() - 64) / 100.0 * baseAmplitude + baseAmplitude));
+                Main.getPowerManager().getPowerLine(column).updateOscilloscopeData();
             }
         });
         return amplitudeControl;
@@ -116,7 +120,7 @@ public class InitUI {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 Main.getPowerManager().getPowerLine(column).getInputAdjuster().setCurrentPhase((newValue.intValue() - 64) / 100.0 * Math.PI + basePhase);
-                System.out.println(Main.getPowerManager().getPowerLine(column).getInputAdjuster().getCurrentPhase());
+                Main.getPowerManager().getPowerLine(column).updateOscilloscopeData();
             }
         });
         return phaseControl;
@@ -168,10 +172,15 @@ public class InitUI {
     }
     
     
-    public static VBox createOscilloscope(int column, domain.PowerLine powerLine) {
-        /* int timeframe = 400;
+    public static Oscilloscope createOscilloscope(int column, domain.PowerLine powerLine) {
+        int timeframe = 200;
         int scale = 200;        
-        StackPane oscilloscope = new StackPane(); */
+        Oscilloscope oscilloscope = new Oscilloscope(column, powerLine);
+        GridPane.setRowIndex(oscilloscope, 6);
+        GridPane.setColumnIndex(oscilloscope, column);
+        
+        /*
+        StackPane oscilloscope = new StackPane(); 
         Label reactorFrequency = new Label();
         Label controlFrequency = new Label();
         HBox frequencyBox = new HBox(20, reactorFrequency, controlFrequency);
@@ -192,7 +201,8 @@ public class InitUI {
         GridPane.setRowIndex(oscilloscope, 6);
         GridPane.setColumnIndex(oscilloscope, column);
         oscilloscope.setId("oscilloscope" + column);
-        // Create chart here
+        */
+        
         
         return oscilloscope;
     }

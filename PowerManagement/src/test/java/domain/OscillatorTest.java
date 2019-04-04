@@ -60,7 +60,7 @@ public class OscillatorTest {
     @Test
     public void FluctuatorNoFluctuationTest() {
         Oscillator reactorLine = new Oscillator(100, 100, 0.0);
-        Fluctuator inputFluctuator = new Fluctuator(reactorLine,0,10);
+        Fluctuator inputFluctuator = new Fluctuator(reactorLine,10);
         inputFluctuator.fluctuateAmplitude();
         assertEquals(100, reactorLine.getCurrentAmplitude().intValue());
     }
@@ -68,8 +68,8 @@ public class OscillatorTest {
     @Test
     public void FluctuatorForcedFluctuationTest() {
         Oscillator reactorLine = new Oscillator(100, 100, 0.0);
-        Fluctuator inputFluctuator = new Fluctuator(reactorLine,0,10);
-        inputFluctuator.fluctuateFrequency(100,30);
+        Fluctuator inputFluctuator = new Fluctuator(reactorLine,10);
+        inputFluctuator.fluctuateFrequency(30);
         assertNotEquals(100, reactorLine.getCurrentFrequency().intValue());
     }
 }

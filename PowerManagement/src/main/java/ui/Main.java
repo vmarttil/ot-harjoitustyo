@@ -20,6 +20,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -42,7 +43,7 @@ public class Main extends Application {
     static ToggleButton[] shutdownButtons;
     static VBox[] controlButtonFrames;
     static BorderPane[] powerLineControlBlocks;
-    static VBox[] oscilloscopes;
+    static Oscilloscope[] oscilloscopes;
     /*
     @Override
     public void init() throws Exception {
@@ -61,6 +62,7 @@ public class Main extends Application {
             domain.PowerLine line = new domain.PowerLine(powerManager, i);
             powerManager.getPowerLines()[i] = line;
         }
+        
         powerManager.startReactorService(10);
         // Create user interface
         primaryStage.setTitle("Power Management Application");
@@ -72,7 +74,7 @@ public class Main extends Application {
         offlineButtons = new ToggleButton[lines];
         shutdownButtons = new ToggleButton[lines];
         powerLineControlBlocks = new BorderPane[lines];
-        oscilloscopes = new VBox[lines];
+        oscilloscopes = new Oscilloscope[lines];
         for (int i=0; i < lines; i++) {
             frequencyControls[i] = InitUI.createFrequencyControl(i);
             amplitudeControls[i] = InitUI.createAmplitudeControl(i);
@@ -156,6 +158,9 @@ public class Main extends Application {
         return shutdownButtons;
     }
     
+    public static Oscilloscope[] getOscilloscopes() {
+        return oscilloscopes;
+    }
     
     
     

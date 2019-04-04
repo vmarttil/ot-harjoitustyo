@@ -28,6 +28,8 @@ public class Manager {
         
     }
     
+    // Getters
+    
     public PowerLine[] getPowerLines() {
         return powerLines;
     }
@@ -36,6 +38,12 @@ public class Manager {
         return powerLines[number];
     }
 
+    // Setters
+    
+    public void setReactorPeriod(int period) {
+        reactorService.setPeriod(Duration.seconds(period));
+    }
+    
     // Reactor service taking care of timing
     
     static public void triggerFluctuation() {
@@ -44,14 +52,11 @@ public class Manager {
                 Random random = new Random();
                     int reactorLine = random.nextInt(1);
                     Main.getPowerManager().getPowerLine(reactorLine).getInputFluctuator().fluctuateAll();
+                    Main.getPowerManager().getPowerLine(reactorLine).fluctuateLine();
             }
         });
     }
     
-    
-    public void setReactorPeriod(int period) {
-        reactorService.setPeriod(Duration.seconds(period));
-    }
     
     public void startReactorService(int period) {
         reactorService = new ReactorService();
@@ -63,7 +68,6 @@ public class Manager {
         protected Task<Void> createTask() {
             return new Task<Void>() {
                 protected Void call() {
-                    // Randomize the reactor line to fluctuate
                     triggerFluctuation();
                     return null;
                 }

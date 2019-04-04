@@ -15,7 +15,6 @@ import javafx.beans.property.SimpleIntegerProperty;
  * @author Ville
  */
 public class Oscillator {
-    
     int baseFrequency;
     int baseAmplitude;
     double basePhase;
