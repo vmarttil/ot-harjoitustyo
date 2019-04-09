@@ -50,9 +50,9 @@ public class Manager {
         Platform.runLater(new Runnable() {
             public void run() {
                 Random random = new Random();
-                    int reactorLine = random.nextInt(1);
-                    Main.getPowerManager().getPowerLine(reactorLine).getInputFluctuator().fluctuateAll();
-                    Main.getPowerManager().getPowerLine(reactorLine).fluctuateLine();
+                int reactorLine = random.nextInt(1);
+                // Main.getPowerManager().getPowerLine(reactorLine).getInputFluctuator().fluctuateAll();
+                Main.getPowerManager().getPowerLine(reactorLine).fluctuateLine();
             }
         });
     }

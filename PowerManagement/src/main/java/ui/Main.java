@@ -6,6 +6,7 @@
 package ui;
 
 import domain.Manager;
+import java.io.File;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.geometry.HPos;
@@ -39,11 +40,13 @@ public class Main extends Application {
     static Slider[] frequencyControls;
     static Slider[] amplitudeControls;
     static Slider[] phaseControls;
+    static Led[] statusLeds;
     static ToggleButton[] offlineButtons;
     static ToggleButton[] shutdownButtons;
     static VBox[] controlButtonFrames;
     static BorderPane[] powerLineControlBlocks;
     static Oscilloscope[] oscilloscopes;
+    static Label[] outputGauges;
     /*
     @Override
     public void init() throws Exception {
@@ -53,44 +56,56 @@ public class Main extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception {
-        
+        // Application.setUserAgentStylesheet(getClass().getResource("PowerManagement.css").toExternalForm());
         lines = 1;
         // Create Power Manager
         powerManager = new domain.Manager();
         // Create Power Lines
-        for (int i=0; i < lines; i++) {
+        for (int i = 0; i < lines; i++) {
             domain.PowerLine line = new domain.PowerLine(powerManager, i);
             powerManager.getPowerLines()[i] = line;
         }
-        
         powerManager.startReactorService(10);
         // Create user interface
         primaryStage.setTitle("Power Management Application");
+        managerPane = createUserInterface(lines);
+        Scene scene = new Scene(managerPane, 1200, 800);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+    
+    private GridPane createUserInterface(int lines) {
         managerPane = InitUI.createManagerPane(lines);
         frequencyControls = new Slider[lines];
         amplitudeControls = new Slider[lines];
         phaseControls = new Slider[lines];
         controlButtonFrames = new VBox[lines];
+        statusLeds = new Led[lines];
         offlineButtons = new ToggleButton[lines];
         shutdownButtons = new ToggleButton[lines];
         powerLineControlBlocks = new BorderPane[lines];
         oscilloscopes = new Oscilloscope[lines];
-        for (int i=0; i < lines; i++) {
+        outputGauges = new Label[lines];
+        generatePowerLineControls(lines);
+        return managerPane;
+    }
+    
+    private void generatePowerLineControls(int lines) {
+        for (int i = 0; i < lines; i++) {
             frequencyControls[i] = InitUI.createFrequencyControl(i);
             amplitudeControls[i] = InitUI.createAmplitudeControl(i);
             phaseControls[i] = InitUI.createPhaseControl(i);
+            statusLeds[i] = InitUI.createStatusLed(i);
             offlineButtons[i] = InitUI.createOfflineButton(i);
             shutdownButtons[i] = InitUI.createShutdownButton(i);
             controlButtonFrames[i] = InitUI.createControlButtonFrame(i);
             powerLineControlBlocks[i] = InitUI.createPowerLineControls(i);
             oscilloscopes[i] = InitUI.createOscilloscope(i, powerManager.getPowerLine(i));
+            outputGauges[i] = InitUI.createOutputGauge(i, powerManager.getPowerLine(i));
             managerPane.getChildren().add(powerLineControlBlocks[i]);
             managerPane.getChildren().add(oscilloscopes[i]);
+            managerPane.getChildren().add(outputGauges[i]);
         }
-        
-        Scene scene = new Scene(managerPane, 1200, 800);
-        primaryStage.setScene(scene);
-        primaryStage.show();
     }
     
     /*
@@ -150,6 +165,10 @@ public class Main extends Application {
         return controlButtonFrames;
     }
 
+    public static Led[] getStatusLeds() {
+        return statusLeds;
+    }
+    
     public static ToggleButton[] getOfflineButtons() {
         return offlineButtons;
     }

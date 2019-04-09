@@ -130,4 +130,5 @@ public class Fluctuator {
         fluctuatePhase(volatility);
     }
     
+    
 }

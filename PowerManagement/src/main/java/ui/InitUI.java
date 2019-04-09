@@ -5,16 +5,6 @@
  */
 package ui;
 
-import eu.hansolo.fx.smoothcharts.SmoothedChart;
-import eu.hansolo.medusa.Gauge;
-import eu.hansolo.medusa.GaugeBuilder;
-import eu.hansolo.medusa.LcdDesign;
-import eu.hansolo.medusa.LcdFont;
-import eu.hansolo.medusa.Marker;
-import eu.hansolo.medusa.Section;
-import eu.hansolo.medusa.TickLabelLocation;
-import eu.hansolo.medusa.TickLabelOrientation;
-import eu.hansolo.medusa.TickMarkType;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
@@ -23,18 +13,14 @@ import javafx.geometry.Orientation;
 import static javafx.geometry.Orientation.HORIZONTAL;
 import static javafx.geometry.Orientation.VERTICAL;
 import javafx.geometry.Pos;
-import javafx.scene.chart.NumberAxis;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Stop;
 
 /**
  *
@@ -55,7 +41,7 @@ public class InitUI {
         // Set the vertical gap between rows
         managerPane.setVgap(20);
         // Add column constraints
-        for (int i=0; i < columns; i++) {
+        for (int i = 0; i < columns; i++) {
             ColumnConstraints column = new ColumnConstraints();
             column.setPercentWidth(25);
             column.setHalignment(HPos.CENTER);
@@ -65,6 +51,7 @@ public class InitUI {
     }
     
     public static BorderPane createPowerLineControls(int column) {
+        Led statusLed = Main.getStatusLeds()[column];
         Slider frequencyControl = Main.getFrequencyControls()[column];
         Slider amplitudeControl = Main.getAmplitudeControls()[column];
         Slider phaseControl = Main.getPhaseControls()[column];
@@ -72,19 +59,24 @@ public class InitUI {
         BorderPane powerLineControlBlock = new BorderPane();
         GridPane.setRowIndex(powerLineControlBlock, 7);
         GridPane.setColumnIndex(powerLineControlBlock, column);
-        powerLineControlBlock.setId("powerLineControls" + column);    
-        powerLineControlBlock.setTop(phaseControl);
-        powerLineControlBlock.setAlignment(phaseControl, Pos.TOP_CENTER);
-        powerLineControlBlock.setMargin(phaseControl, new Insets(20,20,20,20));
-        powerLineControlBlock.setCenter(controlButtonFrame);
-        powerLineControlBlock.setAlignment(controlButtonFrame, Pos.CENTER);
-        powerLineControlBlock.setLeft(frequencyControl);
-        powerLineControlBlock.setAlignment(frequencyControl, Pos.CENTER);
-        powerLineControlBlock.setMargin(frequencyControl, new Insets(0,20,00,40));
-        powerLineControlBlock.setRight(amplitudeControl);
-        powerLineControlBlock.setAlignment(amplitudeControl, Pos.CENTER);
-        powerLineControlBlock.setMargin(amplitudeControl, new Insets(0,40,00,20));
+        powerLineControlBlock.setId("powerLineControls" + column);
+        powerLineControlBlock = formatControlPane(powerLineControlBlock, phaseControl, frequencyControl, controlButtonFrame, amplitudeControl);
         return powerLineControlBlock;
+    }
+    
+    private static BorderPane formatControlPane(BorderPane controlBlock, Node top, Node left, Node center, Node right) {
+        controlBlock.setTop(top);
+        controlBlock.setAlignment(top, Pos.TOP_CENTER);
+        controlBlock.setMargin(top, new Insets(0, 40, 0, 40));
+        controlBlock.setCenter(center);
+        controlBlock.setAlignment(center, Pos.CENTER);
+        controlBlock.setLeft(left);
+        controlBlock.setAlignment(left, Pos.CENTER);
+        controlBlock.setMargin(left, new Insets(0, 20, 00, 40));
+        controlBlock.setRight(right);
+        controlBlock.setAlignment(right, Pos.CENTER);
+        controlBlock.setMargin(right, new Insets(0, 40, 00, 20));
+        return controlBlock;
     }
     
     public static Slider createFrequencyControl(int column) {
@@ -126,9 +118,24 @@ public class InitUI {
         return phaseControl;
     }
     
+    public static Led createStatusLed(int column) {
+        Led statusLed = new Led();
+        
+        return statusLed;
+    }
+    
     public static ToggleButton createOfflineButton(int column) {
         ToggleButton offlineButton = new ToggleButton("Offline");
         offlineButton.setId("offlineButton" + column);
+        
+        offlineButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            if (offlineButton.isSelected() == true) {
+                Main.powerManager.getPowerLine(column).setOffline();
+            }
+            if (offlineButton.isSelected() == false) {
+                Main.powerManager.getPowerLine(column).setOnline();
+            }
+        }));
         
         return offlineButton;
     }
@@ -136,6 +143,15 @@ public class InitUI {
     public static ToggleButton createShutdownButton(int column) {
         ToggleButton shutdownButton = new ToggleButton("Shutdown");
         shutdownButton.setId("shutdownButton" + column);
+        
+        shutdownButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            if (shutdownButton.isSelected() == true) {
+                Main.powerManager.getPowerLine(column).shutdownProcess();
+            }
+            if (shutdownButton.isSelected() == false) {
+                Main.powerManager.getPowerLine(column).startupProcess();
+            }
+        }));
         
         return shutdownButton;
     }
@@ -153,17 +169,19 @@ public class InitUI {
         // Constructing and formatting the slider
         Slider slider = new Slider(minValue, maxValue, value);
         slider.setShowTickLabels(false);
-        slider.setShowTickMarks(true);
+        slider.setShowTickMarks(false);
         slider.setMajorTickUnit(16);
         slider.setMinorTickCount(16);
         slider.setSnapToTicks(true);
         slider.setBlockIncrement(1);
         slider.setOrientation(orientation);
         if (orientation.equals(HORIZONTAL)) {
+            slider.setMinWidth(100);
             slider.setPrefWidth(150);
-            slider.setMaxWidth(200);
+            slider.setMaxWidth(150);
         } else {
-            slider.setPrefHeight(200);
+            slider.setMinHeight(100);
+            slider.setPrefHeight(150);
             slider.setMaxHeight(200);
         }
         Label sliderLabel = new Label(label);
@@ -171,44 +189,36 @@ public class InitUI {
         return slider;
     }
     
-    
     public static Oscilloscope createOscilloscope(int column, domain.PowerLine powerLine) {
-        int timeframe = 200;
-        int scale = 200;        
-        Oscilloscope oscilloscope = new Oscilloscope(column, powerLine);
+        int timeframe = 195;
+        int scale = 150;        
+        Oscilloscope oscilloscope = new Oscilloscope(column, powerLine, timeframe, scale);
+        oscilloscope.setAlignment(Pos.CENTER);
+        oscilloscope.getXAxis().setTickMarkVisible(false);
+        oscilloscope.getXAxis().setMinorTickVisible(false);
+        oscilloscope.getXAxis().setTickLabelsVisible(false);
+        oscilloscope.getYAxis().setTickMarkVisible(false);
+        oscilloscope.getYAxis().setMinorTickVisible(false);
+        oscilloscope.getYAxis().setTickLabelsVisible(false);
+        oscilloscope.getChart().setCreateSymbols(false);
+        oscilloscope.getChart().setLegendVisible(false);
+        oscilloscope.getChart().setAnimated(true);
+        oscilloscope.getChart().setMinHeight(150);
+        oscilloscope.getChart().setPrefHeight(200);
+        oscilloscope.getChart().setMaxHeight(250);
         GridPane.setRowIndex(oscilloscope, 6);
         GridPane.setColumnIndex(oscilloscope, column);
-        
-        /*
-        StackPane oscilloscope = new StackPane(); 
-        Label reactorFrequency = new Label();
-        Label controlFrequency = new Label();
-        HBox frequencyBox = new HBox(20, reactorFrequency, controlFrequency);
-        Label reactorAmplitude = new Label();
-        Label controlAmplitude = new Label();
-        HBox amplitudeBox = new HBox(20, reactorAmplitude, controlAmplitude);
-        Label reactorPhase = new Label();
-        Label controlPhase = new Label();
-        HBox phaseBox = new HBox(20, reactorPhase, controlPhase);
-        VBox oscilloscope = new VBox(10, frequencyBox, amplitudeBox, phaseBox);
-        // Bindings to val power line properties 
-        reactorFrequency.textProperty().bind(powerLine.getReactorFrequency().asString());
-        controlFrequency.textProperty().bind(powerLine.getControlFrequency().asString());
-        reactorAmplitude.textProperty().bind(powerLine.getReactorAmplitude().asString());
-        controlAmplitude.textProperty().bind(powerLine.getControlAmplitude().asString());
-        reactorPhase.textProperty().bind(powerLine.getReactorPhase().asString());
-        controlPhase.textProperty().bind(powerLine.getControlPhase().asString());
-        GridPane.setRowIndex(oscilloscope, 6);
-        GridPane.setColumnIndex(oscilloscope, column);
-        oscilloscope.setId("oscilloscope" + column);
-        */
-        
-        
         return oscilloscope;
     }
     
-    /*
-    public static StackPane createOutPutGauge(int column) {
+    
+    public static Label createOutputGauge(int column, domain.PowerLine powerline) {
+        Label outputGauge = new Label();
+        outputGauge.textProperty().bind(powerline.getOutputPower().asString());
+        GridPane.setRowIndex(outputGauge, 5);
+        GridPane.setColumnIndex(outputGauge, column);
+        return outputGauge;
+        /*
         StackPane gaugePane = new StackPane();
         Gauge gauge = GaugeBuilder  
         .create()  
@@ -266,8 +276,9 @@ public class InitUI {
         gaugePane.setId("gaugePane" + column);
         gaugePane.getChildren().add(gauge);
         return gaugePane;
+        */     
     }
-    */ 
+    
     
     
 }

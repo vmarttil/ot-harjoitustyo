@@ -58,14 +58,6 @@ public class OscillatorTest {
     }
     
     @Test
-    public void FluctuatorNoFluctuationTest() {
-        Oscillator reactorLine = new Oscillator(100, 100, 0.0);
-        Fluctuator inputFluctuator = new Fluctuator(reactorLine,10);
-        inputFluctuator.fluctuateAmplitude();
-        assertEquals(100, reactorLine.getCurrentAmplitude().intValue());
-    }
-    
-    @Test
     public void FluctuatorForcedFluctuationTest() {
         Oscillator reactorLine = new Oscillator(100, 100, 0.0);
         Fluctuator inputFluctuator = new Fluctuator(reactorLine,10);
