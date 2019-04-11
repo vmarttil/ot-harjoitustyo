@@ -14,7 +14,7 @@
 | 3.4.  | 4    | oskilloskooppitoiminnon alustava toteutus |
 | 4.4.  | 2    | oskilloskooppitoiminnon debuggaus, optimointi ja käytettävyystestaus |
 | 9.4.  | 8    | ulostulovirran laskentatoiminto, oskilloskoopin muokkausta, painikkeiden toiminnallisuuden lisääminen |
-|   |     |  |
+| 10.4. | 6    | painikkeiden toiminnallisuuden viimeistely ja reaktorilinjan alasajon toteutus, epävakaushälytyksen lisääminen |
 |   |     |  |
 |   |     |  |
 |   |     |  |
