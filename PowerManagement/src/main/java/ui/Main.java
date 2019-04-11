@@ -7,6 +7,7 @@ package ui;
 
 import domain.Manager;
 import java.io.File;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.geometry.HPos;
@@ -33,14 +34,14 @@ import javafx.stage.Stage;
  * @author Ville
  */
 public class Main extends Application {
-    
+    private static final Logger errorLogger = Logger.getLogger(Main.class.getName());
     static int lines;
     static domain.Manager powerManager;
     static GridPane managerPane;
     static Slider[] frequencyControls;
     static Slider[] amplitudeControls;
     static Slider[] phaseControls;
-    static Led[] statusLeds;
+    static StatusLed[] statusLeds;
     static ToggleButton[] offlineButtons;
     static ToggleButton[] shutdownButtons;
     static VBox[] controlButtonFrames;
@@ -56,7 +57,7 @@ public class Main extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Application.setUserAgentStylesheet(getClass().getResource("PowerManagement.css").toExternalForm());
+//        Application.setUserAgentStylesheet(getClass().getResource("PowerManagement.css").toExternalForm());
         lines = 1;
         // Create Power Manager
         powerManager = new domain.Manager();
@@ -80,7 +81,7 @@ public class Main extends Application {
         amplitudeControls = new Slider[lines];
         phaseControls = new Slider[lines];
         controlButtonFrames = new VBox[lines];
-        statusLeds = new Led[lines];
+        statusLeds = new StatusLed[lines];
         offlineButtons = new ToggleButton[lines];
         shutdownButtons = new ToggleButton[lines];
         powerLineControlBlocks = new BorderPane[lines];
@@ -165,7 +166,7 @@ public class Main extends Application {
         return controlButtonFrames;
     }
 
-    public static Led[] getStatusLeds() {
+    public static StatusLed[] getStatusLeds() {
         return statusLeds;
     }
     

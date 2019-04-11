@@ -6,18 +6,20 @@
 package domain;
 
 import java.util.Random;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.util.Duration;
 import ui.Main;
+import ui.StatusLed;
 
 /**
  *
  * @author Ville
  */
 public class Manager {
-    
+    private static final Logger errorLogger = Logger.getLogger(Manager.class.getName());
     PowerLine[] powerLines;
     int lines;
     ReactorService reactorService;
@@ -51,7 +53,6 @@ public class Manager {
             public void run() {
                 Random random = new Random();
                 int reactorLine = random.nextInt(1);
-                // Main.getPowerManager().getPowerLine(reactorLine).getInputFluctuator().fluctuateAll();
                 Main.getPowerManager().getPowerLine(reactorLine).fluctuateLine();
             }
         });

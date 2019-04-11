@@ -5,9 +5,17 @@
  */
 package domain;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
@@ -19,14 +27,17 @@ import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import ui.Main;
+import ui.StatusLed;
 
 /**
  *
  * @author Ville
  */
 public class PowerLine {
+    private static final Logger errorLogger = Logger.getLogger(PowerLine.class.getName());
     int number;
     int stability;
     Random randomGenerator;
@@ -40,6 +51,7 @@ public class PowerLine {
     SimpleDoubleProperty outputPower;
     double rmsSum;
     double rms;
+    boolean unstable;
     
     public PowerLine(Manager manager, int number) {
         this.stability = 50;
@@ -53,6 +65,7 @@ public class PowerLine {
         this.outputPower = new SimpleDoubleProperty(100);
         this.inputPower = 100;
         this.online = true;
+        this.unstable = false;
         createOscilloscopeData();
     }
  
@@ -121,19 +134,45 @@ public class PowerLine {
     }
     
     public void setOutputPower(double power) {
-        outputPower.set(power);
+        double powerOutput = (double) ((int) Math.round(power * 10) / 10.0);
+        outputPower.set(powerOutput);
     }
     
     public void setOnline() {
-        this.online = true;
-        this.updateOscilloscopeData();
+        if (Main.getShutdownButtons()[number].isSelected() == false) {
+            this.online = true;
+            Main.getStatusLeds()[number].setStatus("ok");
+            this.updateOscilloscopeData();
+        }
     }
     
     public void setOffline() {
-        this.online = false;
-        this.setOutputPower(0);
+        if (Main.getShutdownButtons()[number].isSelected() == false) {
+            this.online = false;
+            Main.getStatusLeds()[number].setStatus("warning");
+            this.setOutputPower(0);
+        }
     }
     
+    public void setUnstable() {
+        this.unstable = true;
+        if (Main.getOfflineButtons()[number].isSelected() == false) {
+            Main.getStatusLeds()[number].setStatus("alert");
+            Main.getStatusLeds()[number].setRapidBlink(true);
+        }
+    }
+    
+    public void setStable() {
+        this.unstable = false;
+        Main.getStatusLeds()[number].setRapidBlink(false);
+        if (Main.getShutdownButtons()[number].isSelected() == true) {
+            Main.getStatusLeds()[number].setStatus("off");
+        } else if (Main.getOfflineButtons()[number].isSelected() == true) {
+            Main.getStatusLeds()[number].setStatus("warning");
+        } else {
+            Main.getStatusLeds()[number].setStatus("ok");
+        } 
+    }
     
     // Adjusting the power line
     
@@ -163,16 +202,73 @@ public class PowerLine {
     }
     
     public void shutdownProcess() {
-        Main.getStatusLeds()[number].setColor(Color.RED);
+        Timer shutdownTimer = new Timer();
+        TimerTask shutdownTask = new TimerTask() {
+            public void run() {
+                finishShutdown();
+            }
+        };
+        if (Main.getOfflineButtons()[number].isSelected() == false) {
+            this.online = false;
+            Main.getStatusLeds()[number].setStatus("warning");
+            this.setOutputPower(0);
+            Main.getOfflineButtons()[number].setSelected(true);
+        }
         Main.getStatusLeds()[number].setBlink(true);
-        // TimeUnit.SECONDS.sleep(5);
-        this.resetLine();
-        Main.getStatusLeds()[number].setBlink(false);
+        Main.getOfflineButtons()[number].setDisable(true);
+        Main.getShutdownButtons()[number].setDisable(true);
+        shutdownTimer.schedule(shutdownTask,10000l);
     }
     
     public void startupProcess() {
-        
+        Timer startupTimer = new Timer();
+        TimerTask startupTask = new TimerTask() {
+            public void run() {
+                finishStartup();
+            }
+        };
+        if (Main.getOfflineButtons()[number].isSelected() == true) {
+            Main.getStatusLeds()[number].setStatus("warning");
+        } else {
+            Main.getStatusLeds()[number].setStatus("ok");
+        }
+        Main.getStatusLeds()[number].setBlink(true);
+        Main.getOfflineButtons()[number].setDisable(true);
+        Main.getShutdownButtons()[number].setDisable(true);
+        startupTimer.schedule(startupTask,10000l);
     }
+    
+    public void finishShutdown() {
+        Platform.runLater(new Runnable() {
+            public void run() {
+                Main.getStatusLeds()[number].setBlink(false);
+                Main.getStatusLeds()[number].setStatus("off");
+                Main.getPowerManager().getPowerLine(number).resetLine();
+                Main.getOfflineButtons()[number].setDisable(false);
+                Main.getShutdownButtons()[number].setDisable(false);
+                Main.getShutdownButtons()[number].setText("Startup");
+            }
+        });
+    }
+    
+    public void finishStartup() {
+        Platform.runLater(new Runnable() {
+            public void run() {
+                Main.getStatusLeds()[number].setBlink(false);
+                if (Main.getOfflineButtons()[number].isSelected() == true) {
+                    Main.getStatusLeds()[number].setStatus("warning");
+                } else {
+                    Main.getStatusLeds()[number].setStatus("ok");
+                    Main.getPowerManager().getPowerLine(number).setOnline();
+                    Main.getPowerManager().getPowerLine(number).updateOscilloscopeData();
+                }
+                Main.getOfflineButtons()[number].setDisable(false);
+                Main.getShutdownButtons()[number].setDisable(false);
+                Main.getShutdownButtons()[number].setText("Shutdown");
+            }
+        });
+    }
+    
     
     // Calculating data for the oscilloscope
     
@@ -199,7 +295,7 @@ public class PowerLine {
         this.outputData.addAll(dataSeriesOutput, dataSeriesReactor, dataSeriesControl);
         if (this.online == true) {
             rms = Math.sqrt(rmsSum / 40);
-            setOutputPower(100 - rms);
+            setOutputPower(100 - (rms / 2));
         }
     }
     
@@ -230,6 +326,7 @@ public class PowerLine {
     
     public void updateOscilloscopeData() {
         rmsSum = 0;
+        boolean overshoot = false;
         int reactorFrequency = getReactorFrequency().intValue();
         int reactorAmplitude = getReactorAmplitude().intValue();
         double reactorPhase = getReactorPhase().doubleValue();
@@ -239,16 +336,31 @@ public class PowerLine {
         for (int i = 0; i < 40; i++) {            
             Double reactorValue = reactorAmplitude * Math.sin(2 * Math.PI * reactorFrequency * ((double) i * 5 / 10000) + reactorPhase);
             Double controlValue = controlAmplitude  *  Math.sin(2 * Math.PI * controlFrequency * ((double) i * 5 / 10000) + controlPhase);
-            this.outputData.get(0).getData().get(i).setYValue(reactorValue + controlValue);
+            if (reactorValue + controlValue > 150) {
+                this.outputData.get(0).getData().get(i).setYValue(149);
+                overshoot = true;
+            } else if (reactorValue + controlValue < -150) {
+                this.outputData.get(0).getData().get(i).setYValue(-149);
+                overshoot = true;
+            } else {
+                this.outputData.get(0).getData().get(i).setYValue(reactorValue + controlValue);
+            }
             this.outputData.get(1).getData().get(i).setYValue(reactorValue);
             this.outputData.get(2).getData().get(i).setYValue(controlValue);
             if (this.online == true) {
                 this.rmsSum = this.rmsSum + Math.pow(reactorValue + controlValue, 2);
             }
         }
+        if (overshoot == true) {
+            setUnstable();
+        } else {
+            setStable();
+        }
         if (this.online == true) {
             rms = Math.sqrt(rmsSum / 40);
             setOutputPower(100 - rms);
         }
     }
+    
+    
 }

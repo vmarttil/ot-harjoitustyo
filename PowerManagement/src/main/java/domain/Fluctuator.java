@@ -8,6 +8,8 @@ package domain;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Random;
+import java.util.logging.Logger;
+import ui.StatusLed;
 
 /**
  * The class defines a fluctuator that generates random variation in the 
@@ -22,7 +24,7 @@ import java.util.Random;
  * @author Ville Marttila
  */
 public class Fluctuator {
-    
+    private static final Logger errorLogger = Logger.getLogger(Fluctuator.class.getName());
     Oscillator oscillator;
     int volatility;
     Random randomGenerator;

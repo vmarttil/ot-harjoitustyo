@@ -5,16 +5,19 @@
  */
 package domain;
 
+import java.util.logging.Logger;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import ui.StatusLed;
 
 /**
  *
  * @author Ville
  */
 public class Oscillator {
+    private static final Logger errorLogger = Logger.getLogger(Oscillator.class.getName());
     int baseFrequency;
     int baseAmplitude;
     double basePhase;

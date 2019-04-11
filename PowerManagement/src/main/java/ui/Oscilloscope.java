@@ -6,6 +6,7 @@
 package ui;
 
 import eu.hansolo.fx.smoothcharts.SmoothedChart;
+import java.util.logging.Logger;
 import javafx.scene.Node;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -16,6 +17,7 @@ import javafx.scene.layout.StackPane;
  * @author Ville
  */
 public class Oscilloscope extends StackPane {
+    private static final Logger errorLogger = Logger.getLogger(Oscilloscope.class.getName());
     int column;
     domain.PowerLine powerLine;
     NumberAxis xAxis;

@@ -5,6 +5,7 @@
  */
 package ui;
 
+import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
@@ -28,7 +29,7 @@ import javafx.scene.layout.VBox;
  */
 
 public class InitUI {
-
+    private static final Logger errorLogger = Logger.getLogger(InitUI.class.getName());
 
     public static GridPane createManagerPane(int columns) {
         GridPane managerPane = new GridPane();
@@ -51,7 +52,6 @@ public class InitUI {
     }
     
     public static BorderPane createPowerLineControls(int column) {
-        Led statusLed = Main.getStatusLeds()[column];
         Slider frequencyControl = Main.getFrequencyControls()[column];
         Slider amplitudeControl = Main.getAmplitudeControls()[column];
         Slider phaseControl = Main.getPhaseControls()[column];
@@ -118,16 +118,15 @@ public class InitUI {
         return phaseControl;
     }
     
-    public static Led createStatusLed(int column) {
-        Led statusLed = new Led();
-        
+    public static StatusLed createStatusLed(int column) {
+        StatusLed statusLed = new StatusLed();
+        statusLed.setId("statusLed" + column);
         return statusLed;
     }
     
     public static ToggleButton createOfflineButton(int column) {
         ToggleButton offlineButton = new ToggleButton("Offline");
         offlineButton.setId("offlineButton" + column);
-        
         offlineButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             if (offlineButton.isSelected() == true) {
                 Main.powerManager.getPowerLine(column).setOffline();
@@ -136,14 +135,12 @@ public class InitUI {
                 Main.powerManager.getPowerLine(column).setOnline();
             }
         }));
-        
         return offlineButton;
     }
     
     public static ToggleButton createShutdownButton(int column) {
         ToggleButton shutdownButton = new ToggleButton("Shutdown");
         shutdownButton.setId("shutdownButton" + column);
-        
         shutdownButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             if (shutdownButton.isSelected() == true) {
                 Main.powerManager.getPowerLine(column).shutdownProcess();
@@ -152,15 +149,15 @@ public class InitUI {
                 Main.powerManager.getPowerLine(column).startupProcess();
             }
         }));
-        
         return shutdownButton;
     }
     
     public static VBox createControlButtonFrame(int column) {
+        StatusLed statusLed = Main.getStatusLeds()[column];
         ToggleButton offlineButton = Main.getOfflineButtons()[column];
         ToggleButton shutdownButton = Main.getShutdownButtons()[column];
         VBox controlButtonFrame = new VBox(20);
-        controlButtonFrame.getChildren().addAll(offlineButton, shutdownButton);
+        controlButtonFrame.getChildren().addAll(statusLed, offlineButton, shutdownButton);
         controlButtonFrame.setAlignment(Pos.CENTER);
         return controlButtonFrame; 
     }
