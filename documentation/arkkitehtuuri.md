@@ -1,6 +1,6 @@
 ## Luokkakaavio
 ![Luokkakaavio](luokkakaavio.png)
 
-## Prosessikaavio
+## Sekvenssikaavio
 ### Reaktorilinjan satunnaisvaihtelun laukeaminen
-![Prosessikaavio](prosessikaavio.png)
+![Sekvenssikaavio](sekvenssikaavio.png)
