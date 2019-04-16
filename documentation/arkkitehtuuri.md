@@ -1,1 +1,2 @@
+## Luokkakaavio
 ![Luokkakaavio](luokkakaavio.png)
