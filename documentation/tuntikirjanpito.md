@@ -16,5 +16,6 @@
 | 9.4.  | 8    | ulostulovirran laskentatoiminto, oskilloskoopin muokkausta, painikkeiden toiminnallisuuden lisääminen |
 | 10.4. | 6    | painikkeiden toiminnallisuuden viimeistely ja reaktorilinjan alasajon toteutus, epävakaushälytyksen lisääminen |
 | 11.4. | 3    | virheidenkäsittelyyn perehtyminen ja virheidenkäsittelyn alustava toteutus |
+| 12.4. | 1    | kaikkien neljän reaktorilinjan aktivointi ja ohjelman testaus neljällä linjalla |
 | 16.4. | 4    | dokumentaation päivitys ja uusien testien kirjoittaminen |
-|   | 83    |  |
+|   | 84    |  |
