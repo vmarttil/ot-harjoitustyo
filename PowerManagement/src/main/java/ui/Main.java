@@ -58,7 +58,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 //        Application.setUserAgentStylesheet(getClass().getResource("PowerManagement.css").toExternalForm());
-        lines = 1;
+        lines = 4;
         // Create Power Manager
         powerManager = new domain.Manager();
         // Create Power Lines

@@ -25,7 +25,7 @@ public class Manager {
     ReactorService reactorService;
     
     public Manager() {
-        lines = 1;
+        lines = 4;
         powerLines = new PowerLine[lines];
         
     }
@@ -52,7 +52,7 @@ public class Manager {
         Platform.runLater(new Runnable() {
             public void run() {
                 Random random = new Random();
-                int reactorLine = random.nextInt(1);
+                int reactorLine = random.nextInt(4);
                 Main.getPowerManager().getPowerLine(reactorLine).fluctuateLine();
             }
         });
