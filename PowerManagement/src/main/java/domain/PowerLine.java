@@ -37,7 +37,7 @@ import ui.StatusLed;
  * @author Ville
  */
 public class PowerLine {
-    private static final Logger errorLogger = Logger.getLogger(PowerLine.class.getName());
+    private static final Logger ERRORLOGGER = Logger.getLogger(PowerLine.class.getName());
     int number;
     int stability;
     Random randomGenerator;
@@ -70,6 +70,10 @@ public class PowerLine {
     }
  
     // Getters
+    
+    public int getStability() {
+        return this.stability;
+    }
     
     public Oscillator getReactorLine() {
         return this.reactorLine;
@@ -217,7 +221,7 @@ public class PowerLine {
         Main.getStatusLeds()[number].setBlink(true);
         Main.getOfflineButtons()[number].setDisable(true);
         Main.getShutdownButtons()[number].setDisable(true);
-        shutdownTimer.schedule(shutdownTask,10000l);
+        shutdownTimer.schedule(shutdownTask, 10000l);
     }
     
     public void startupProcess() {
@@ -235,7 +239,7 @@ public class PowerLine {
         Main.getStatusLeds()[number].setBlink(true);
         Main.getOfflineButtons()[number].setDisable(true);
         Main.getShutdownButtons()[number].setDisable(true);
-        startupTimer.schedule(startupTask,10000l);
+        startupTimer.schedule(startupTask, 10000l);
     }
     
     public void finishShutdown() {
@@ -287,7 +291,6 @@ public class PowerLine {
             createOscilloscopeDatapoint(dataSeriesOutput, dataSeriesReactor, dataSeriesControl, 
                                         reactorFrequency, reactorAmplitude, reactorPhase, 
                                         controlFrequency, controlAmplitude, controlPhase, i);
-            
         }
         dataSeriesOutput.setName("Reactor" + number + "OutputData");
         dataSeriesReactor.setName("Reactor" + number + "ReactorData");
@@ -361,6 +364,4 @@ public class PowerLine {
             setOutputPower(100 - rms);
         }
     }
-    
-    
 }

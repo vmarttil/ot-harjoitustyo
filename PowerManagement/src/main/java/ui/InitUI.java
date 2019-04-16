@@ -29,7 +29,7 @@ import javafx.scene.layout.VBox;
  */
 
 public class InitUI {
-    private static final Logger errorLogger = Logger.getLogger(InitUI.class.getName());
+    private static final Logger ERRORLOGGER = Logger.getLogger(InitUI.class.getName());
 
     public static GridPane createManagerPane(int columns) {
         GridPane managerPane = new GridPane();

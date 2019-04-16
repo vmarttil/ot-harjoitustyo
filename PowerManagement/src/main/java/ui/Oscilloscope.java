@@ -17,7 +17,7 @@ import javafx.scene.layout.StackPane;
  * @author Ville
  */
 public class Oscilloscope extends StackPane {
-    private static final Logger errorLogger = Logger.getLogger(Oscilloscope.class.getName());
+    private static final Logger ERRORLOGGER = Logger.getLogger(Oscilloscope.class.getName());
     int column;
     domain.PowerLine powerLine;
     NumberAxis xAxis;

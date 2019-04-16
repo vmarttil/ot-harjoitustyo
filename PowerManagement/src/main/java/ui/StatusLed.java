@@ -27,7 +27,7 @@ import javafx.util.Duration;
  * @author Ville
  */
 public class StatusLed extends StackPane {
-    private static final Logger errorLogger = Logger.getLogger(StatusLed.class.getName());
+    private static final Logger ERRORLOGGER = Logger.getLogger(StatusLed.class.getName());
     String status; 
     boolean blink;
     Image offImage;
@@ -48,7 +48,7 @@ public class StatusLed extends StackPane {
         this.okImage = loadImage("src/main/resources/green_led.png");
         this.warningImage = loadImage("src/main/resources/yellow_led.png");
         this.alertImage = loadImage("src/main/resources/red_led.png");
-        this.testDisplay = new Circle(50.0,Paint.valueOf("BLACK"));
+        this.testDisplay = new Circle(50.0, Paint.valueOf("BLACK"));
         this.display = new ImageView(okImage);
         this.display.setFitHeight(30.0);
         this.display.setFitWidth(30.0);
@@ -61,43 +61,20 @@ public class StatusLed extends StackPane {
     private Image loadImage(String filepath) {
         Image image = null;
         File imageFile = new File(filepath);
-        try(FileInputStream offImageInputStream = new FileInputStream(imageFile);) {
+        try (FileInputStream offImageInputStream = new FileInputStream(imageFile);) {
             image = new Image(offImageInputStream, 50, 0, false, false);
-	} catch(FileNotFoundException e) {
-            errorLogger.log(Level.SEVERE, "File " + imageFile + " not found.", e);
-	} catch(IOException e) {
-            errorLogger.log(Level.SEVERE, "Failed to load file " + imageFile + ".", e);
+	} catch (FileNotFoundException e) {
+            ERRORLOGGER.log(Level.SEVERE, "File " + imageFile + " not found.", e);
+	} catch (IOException e) {
+            ERRORLOGGER.log(Level.SEVERE, "Failed to load file " + imageFile + ".", e);
 	}
         return image;
     }
     
     private Timeline setupBlinkTimeline(int interval) {
         Timeline timeline = new Timeline(
-        new KeyFrame(Duration.millis(interval),
-        event -> {
-            if (this.display.getImage().equals(offImage)) {
-                if (this.status.equals("off")) {
-                    this.display.setImage(offImage);
-                } else if (this.status.equals("ok")) {
-                    this.display.setImage(okImage);
-                } else if (this.status.equals("warning")) {
-                    this.display.setImage(warningImage);
-                } else if (this.status.equals("alert")) {
-                    this.display.setImage(alertImage);
-                }
-            } else {
-                this.display.setImage(offImage);
-            }
-        }));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        return timeline;
-    }
-    
-    /*
-    private PauseTransition setupBlinkTransition() {
-        PauseTransition blink = new PauseTransition(Duration.millis(500));
-        blink.setOnFinished(event -> {
-            if (this.blink == true) {
+            new KeyFrame(Duration.millis(interval),
+            event -> {
                 if (this.display.getImage().equals(offImage)) {
                     if (this.status.equals("off")) {
                         this.display.setImage(offImage);
@@ -111,14 +88,10 @@ public class StatusLed extends StackPane {
                 } else {
                     this.display.setImage(offImage);
                 }
-                blink.play();
-            } else {
-                blink.stop();
-            }
-        }); 
-        return blink;
+            }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        return timeline;
     }
-*/
     
     // Getters
 

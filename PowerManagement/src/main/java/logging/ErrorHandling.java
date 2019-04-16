@@ -13,22 +13,22 @@ import java.util.logging.FileHandler;
  *
  * @author Ville
  */
-public class errorHandling {
-    private static final Logger errorLogger = Logger.getLogger(errorHandling.class.getName()) ;
+public class ErrorHandling {
+    private static final Logger ERRORLOGGER = Logger.getLogger(ErrorHandling.class.getName());
     public static FileHandler fileHandler;
     
     public static void main(String[] args) {
-        try{
+        try {
             fileHandler = new FileHandler("./errorLog.log");
-            errorLogger.addHandler(fileHandler);
+            ERRORLOGGER.addHandler(fileHandler);
              
             //Setting levels to handlers and LOGGER
             fileHandler.setLevel(Level.ALL);
-            errorLogger.setLevel(Level.ALL);    
-            errorLogger.config("Configuration done.");
+            ERRORLOGGER.setLevel(Level.ALL);    
+            ERRORLOGGER.config("Configuration done.");
              
-        }catch(IOException e){
-            errorLogger.log(Level.SEVERE, "Error occurred in FileHandler.", e);
+        } catch (IOException e) {
+            ERRORLOGGER.log(Level.SEVERE, "Error occurred in FileHandler.", e);
         }
     }
 }

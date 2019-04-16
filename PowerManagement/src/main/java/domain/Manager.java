@@ -19,7 +19,7 @@ import ui.StatusLed;
  * @author Ville
  */
 public class Manager {
-    private static final Logger errorLogger = Logger.getLogger(Manager.class.getName());
+    private static final Logger ERRORLOGGER = Logger.getLogger(Manager.class.getName());
     PowerLine[] powerLines;
     int lines;
     ReactorService reactorService;

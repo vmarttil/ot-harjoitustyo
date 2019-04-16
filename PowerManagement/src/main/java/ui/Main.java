@@ -34,7 +34,7 @@ import javafx.stage.Stage;
  * @author Ville
  */
 public class Main extends Application {
-    private static final Logger errorLogger = Logger.getLogger(Main.class.getName());
+    private static final Logger ERRORLOGGER = Logger.getLogger(Main.class.getName());
     static int lines;
     static domain.Manager powerManager;
     static GridPane managerPane;
