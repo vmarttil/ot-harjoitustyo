@@ -17,7 +17,6 @@ import ui.StatusLed;
  * @author Ville
  */
 public class Oscillator {
-    private static final Logger ERRORLOGGER = Logger.getLogger(Oscillator.class.getName());
     int baseFrequency;
     int baseAmplitude;
     double basePhase;

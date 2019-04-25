@@ -24,7 +24,6 @@ import ui.StatusLed;
  * @author Ville Marttila
  */
 public class Fluctuator {
-    private static final Logger ERRORLOGGER = Logger.getLogger(Fluctuator.class.getName());
     Oscillator oscillator;
     int volatility;
     Random randomGenerator;

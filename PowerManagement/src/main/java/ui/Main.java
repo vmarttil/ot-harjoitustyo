@@ -5,7 +5,9 @@
  */
 package ui;
 
+import com.sun.javafx.css.Stylesheet;
 import domain.Manager;
+import eu.hansolo.medusa.Gauge;
 import java.io.File;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -22,6 +24,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -47,7 +50,13 @@ public class Main extends Application {
     static VBox[] controlButtonFrames;
     static BorderPane[] powerLineControlBlocks;
     static Oscilloscope[] oscilloscopes;
-    static Label[] outputGauges;
+    static Gauge[] lineOutputGauges;
+    static StackPane[] breakers;
+    static Slider[] balanceControls;
+    static VBox[] balanceControlBlocks;
+    static Gauge[] balanceGauges;
+    static Label[] channelOutputGauges;
+    
     /*
     @Override
     public void init() throws Exception {
@@ -57,16 +66,12 @@ public class Main extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception {
-//        Application.setUserAgentStylesheet(getClass().getResource("PowerManagement.css").toExternalForm());
         lines = 4;
         // Create Power Manager
         powerManager = new domain.Manager();
-        // Create Power Lines
-        for (int i = 0; i < lines; i++) {
-            domain.PowerLine line = new domain.PowerLine(powerManager, i);
-            powerManager.getPowerLines()[i] = line;
-        }
-        powerManager.startReactorService(10);
+        powerManager.createPowerLines(lines);
+        powerManager.createPowerChannels(lines / 2);
+        powerManager.startReactorService();
         // Create user interface
         primaryStage.setTitle("Power Management Application");
         managerPane = createUserInterface(lines);
@@ -86,8 +91,14 @@ public class Main extends Application {
         shutdownButtons = new ToggleButton[lines];
         powerLineControlBlocks = new BorderPane[lines];
         oscilloscopes = new Oscilloscope[lines];
-        outputGauges = new Label[lines];
+        lineOutputGauges = new Gauge[lines];
+        breakers = new StackPane[lines];
+        balanceControls = new Slider[lines / 2];
+        balanceControlBlocks = new VBox[lines / 2];        
+        balanceGauges = new Gauge[lines / 2];
+        channelOutputGauges = new Label[lines / 2];
         generatePowerLineControls(lines);
+        generatePowerChannelControls(lines / 2);
         return managerPane;
     }
     
@@ -102,12 +113,29 @@ public class Main extends Application {
             controlButtonFrames[i] = InitUI.createControlButtonFrame(i);
             powerLineControlBlocks[i] = InitUI.createPowerLineControls(i);
             oscilloscopes[i] = InitUI.createOscilloscope(i, powerManager.getPowerLine(i));
-            outputGauges[i] = InitUI.createOutputGauge(i, powerManager.getPowerLine(i));
+            lineOutputGauges[i] = InitUI.createLineOutputGauge(i, powerManager.getPowerLine(i));
             managerPane.getChildren().add(powerLineControlBlocks[i]);
             managerPane.getChildren().add(oscilloscopes[i]);
-            managerPane.getChildren().add(outputGauges[i]);
+            managerPane.getChildren().add(lineOutputGauges[i]);
         }
     }
+    
+    private void generatePowerChannelControls(int channels) {
+        for (int i = 0; i < channels; i++) {
+            breakers[2 * i] = InitUI.createBreaker(2 * i);
+            breakers[2 * i + 1] = InitUI.createBreaker(2 * i + 1);
+            balanceControls[i] = InitUI.createBalanceControl(i);
+            balanceControlBlocks[i] = InitUI.createBalanceControlBlock(i);
+            balanceGauges[i] = InitUI.createBalanceGauge(i, powerManager.getPowerChannel(i));
+            channelOutputGauges[i] = InitUI.createChannelOutputGauge(i, powerManager.getPowerChannel(i));
+            managerPane.getChildren().add(balanceControlBlocks[i]);
+            managerPane.getChildren().add(breakers[2 * i]);
+            managerPane.getChildren().add(breakers[2 * i + 1]);
+            managerPane.getChildren().add(balanceGauges[i]);
+            managerPane.getChildren().add(channelOutputGauges[i]);
+        }
+    }
+    
     
     /*
     @Override
@@ -119,21 +147,7 @@ public class Main extends Application {
     public static void main(String[] args) {
     
         launch(args);
-        
-        /*
-        domain.Oscillator osc1 = new domain.Oscillator(1000, 100);
-        domain.Fluctuator flux1 = new domain.Fluctuator(osc1, 80, 10);
-    
-        
-        for (int i = 0; i < 20; i++) {
-            System.out.println("");
-            System.out.println("Frequency: " + osc1.getCurrentFrequency());
-            System.out.println("Amplitude: " + osc1.getCurrentAmplitude());
-            System.out.println("Phase: " + osc1.getCurrentPhase());
-        
-            flux1.fluctuateAll();
-        }
-    */
+       
     }
     
     // Getters
@@ -182,12 +196,28 @@ public class Main extends Application {
         return oscilloscopes;
     }
     
+    public static Gauge[] getLineOutputGauges() {
+        return lineOutputGauges;
+    }
     
+    public static StackPane[] getBreakers() {
+        return breakers;
+    }
     
+    public static Slider[] getBalanceControls() {
+        return balanceControls;
+    }
     
+    public static VBox[] getBalanceControlBlocks() {
+        return balanceControlBlocks;
+    }
     
+    public static Gauge[] getBalanceGauges() {
+        return balanceGauges;
+    }
     
-    
-    
+    public static Label[] getChannelOutputGauges() {
+        return channelOutputGauges;
+    }
     
 }

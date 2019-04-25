@@ -7,6 +7,7 @@ package ui;
 
 import eu.hansolo.fx.smoothcharts.SmoothedChart;
 import java.util.logging.Logger;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -17,7 +18,6 @@ import javafx.scene.layout.StackPane;
  * @author Ville
  */
 public class Oscilloscope extends StackPane {
-    private static final Logger ERRORLOGGER = Logger.getLogger(Oscilloscope.class.getName());
     int column;
     domain.PowerLine powerLine;
     NumberAxis xAxis;
@@ -37,7 +37,8 @@ public class Oscilloscope extends StackPane {
         SmoothedChart<Number, Number> oscilloscopeChart = new SmoothedChart<>(xAxis, yAxis);
         oscilloscopeChart.setTitle("Reactor Line " + (column + 1));
         oscilloscopeChart.setData(powerLine.getOutputData());
-        
+        oscilloscopeChart.setPadding(new Insets(-10, 0, -20, 0));
+        // oscilloscopeChart.setStyle(".chart-plot-background{-fx-background-color: #000000;}");
         return oscilloscopeChart;
     }
     

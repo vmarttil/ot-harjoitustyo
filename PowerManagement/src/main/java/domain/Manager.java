@@ -19,31 +19,57 @@ import ui.StatusLed;
  * @author Ville
  */
 public class Manager {
-    private static final Logger ERRORLOGGER = Logger.getLogger(Manager.class.getName());
     PowerLine[] powerLines;
+    PowerChannel[] powerChannels;
     int lines;
     ReactorService reactorService;
+    int baseReactorPeriod;
     
     public Manager() {
-        lines = 4;
-        powerLines = new PowerLine[lines];
-        
+        this.lines = 4;
+        this.powerLines = new PowerLine[this.lines];
+        this.powerChannels = new PowerChannel[this.lines / 2];  
+        this.baseReactorPeriod = 5;
     }
     
     // Getters
     
     public PowerLine[] getPowerLines() {
-        return powerLines;
+        return this.powerLines;
     }
     
     public PowerLine getPowerLine(int number) {
-        return powerLines[number];
+        return this.powerLines[number];
     }
 
+    public PowerChannel[] getPowerChannels() {
+        return this.powerChannels;
+    }
+    
+    public PowerChannel getPowerChannel(int number) {
+        return this.powerChannels[number];
+    }
+    
     // Setters
     
     public void setReactorPeriod(int period) {
         reactorService.setPeriod(Duration.seconds(period));
+    }
+    
+    // Creating power lines and channels
+    
+    public void createPowerLines(int lines) {
+        for (int i = 0; i < lines; i++) {
+            PowerLine line = new PowerLine(this, i);
+            getPowerLines()[i] = line;
+        }
+    }
+    
+    public void createPowerChannels(int channels) {
+        for (int i = 0; i < channels; i++) {
+            PowerChannel channel = new PowerChannel(this, i);
+            getPowerChannels()[i] = channel;
+        }
     }
     
     // Reactor service taking care of timing
@@ -59,9 +85,9 @@ public class Manager {
     }
     
     
-    public void startReactorService(int period) {
+    public void startReactorService() {
         reactorService = new ReactorService();
-        reactorService.setPeriod(Duration.seconds(period));
+        reactorService.setPeriod(Duration.seconds(baseReactorPeriod));
         reactorService.start();
     }
 

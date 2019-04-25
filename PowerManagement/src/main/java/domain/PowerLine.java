@@ -15,6 +15,9 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -29,6 +32,7 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import ui.Main;
 import ui.StatusLed;
 
@@ -37,7 +41,6 @@ import ui.StatusLed;
  * @author Ville
  */
 public class PowerLine {
-    private static final Logger ERRORLOGGER = Logger.getLogger(PowerLine.class.getName());
     int number;
     int stability;
     Random randomGenerator;
@@ -48,10 +51,15 @@ public class PowerLine {
     ObservableList<XYChart.Series<Number, Number>> outputData;
     boolean online;
     int inputPower;
+    PowerChannel channel;
     SimpleDoubleProperty outputPower;
     double rmsSum;
     double rms;
     boolean unstable;
+    Timeline unstableTimeline;
+    int imbalance;
+    Timeline imbalanceTimeline;
+    Timeline severeImbalanceTimeline;
     
     public PowerLine(Manager manager, int number) {
         this.stability = 50;
@@ -59,13 +67,17 @@ public class PowerLine {
         this.randomGenerator = new Random();
         this.manager = manager;
         this.reactorLine = new Oscillator(100, 100, 0.0);
-        this.inputFluctuator = new Fluctuator(reactorLine, 10);
+        this.inputFluctuator = new Fluctuator(reactorLine, 5);
         this.inputAdjuster = new Oscillator(100, 100, Math.PI);
         this.outputData = FXCollections.observableArrayList();
         this.outputPower = new SimpleDoubleProperty(100);
         this.inputPower = 100;
         this.online = true;
         this.unstable = false;
+        this.unstableTimeline = setupFluctuationTimeline(400);
+        this.imbalance = 0;
+        this.imbalanceTimeline = setupFluctuationTimeline(2000);
+        this.severeImbalanceTimeline = setupFluctuationTimeline(1000);
         createOscilloscopeData();
     }
  
@@ -127,6 +139,10 @@ public class PowerLine {
         return this.online;
     }
     
+    public int getImbalance() {
+        return this.imbalance;
+    }
+    
     // Setters
 
     public void setStability(int stability) {
@@ -142,6 +158,10 @@ public class PowerLine {
         outputPower.set(powerOutput);
     }
     
+    public void setChannel(PowerChannel channel) {
+        this.channel = channel;
+    }
+    
     public void setOnline() {
         if (Main.getShutdownButtons()[number].isSelected() == false) {
             this.online = true;
@@ -155,20 +175,23 @@ public class PowerLine {
             this.online = false;
             Main.getStatusLeds()[number].setStatus("warning");
             this.setOutputPower(0);
+            channel.updateOutput();
         }
     }
     
     public void setUnstable() {
         this.unstable = true;
+        this.unstableTimeline.play();
         if (Main.getOfflineButtons()[number].isSelected() == false) {
             Main.getStatusLeds()[number].setStatus("alert");
-            Main.getStatusLeds()[number].setRapidBlink(true);
+            Main.getStatusLeds()[number].setFastBlink(true);
         }
     }
     
     public void setStable() {
         this.unstable = false;
-        Main.getStatusLeds()[number].setRapidBlink(false);
+        this.unstableTimeline.stop();
+        Main.getStatusLeds()[number].setFastBlink(false);
         if (Main.getShutdownButtons()[number].isSelected() == true) {
             Main.getStatusLeds()[number].setStatus("off");
         } else if (Main.getOfflineButtons()[number].isSelected() == true) {
@@ -176,6 +199,20 @@ public class PowerLine {
         } else {
             Main.getStatusLeds()[number].setStatus("ok");
         } 
+    }
+    
+    public void setImbalance(int degree) {
+        this.imbalance = degree;
+        if (this.imbalance == 0) {
+            this.imbalanceTimeline.stop();
+            this.severeImbalanceTimeline.stop();
+        } else if (this.imbalance == 1) {
+            this.imbalanceTimeline.play();
+            this.severeImbalanceTimeline.stop();
+        } else if (this.imbalance == 2) {
+            this.imbalanceTimeline.stop();
+            this.severeImbalanceTimeline.play();
+        }
     }
     
     // Adjusting the power line
@@ -218,7 +255,7 @@ public class PowerLine {
             this.setOutputPower(0);
             Main.getOfflineButtons()[number].setSelected(true);
         }
-        Main.getStatusLeds()[number].setBlink(true);
+        Main.getStatusLeds()[number].setSlowBlink(true);
         Main.getOfflineButtons()[number].setDisable(true);
         Main.getShutdownButtons()[number].setDisable(true);
         shutdownTimer.schedule(shutdownTask, 10000l);
@@ -236,7 +273,7 @@ public class PowerLine {
         } else {
             Main.getStatusLeds()[number].setStatus("ok");
         }
-        Main.getStatusLeds()[number].setBlink(true);
+        Main.getStatusLeds()[number].setSlowBlink(true);
         Main.getOfflineButtons()[number].setDisable(true);
         Main.getShutdownButtons()[number].setDisable(true);
         startupTimer.schedule(startupTask, 10000l);
@@ -245,7 +282,7 @@ public class PowerLine {
     public void finishShutdown() {
         Platform.runLater(new Runnable() {
             public void run() {
-                Main.getStatusLeds()[number].setBlink(false);
+                Main.getStatusLeds()[number].setSlowBlink(false);
                 Main.getStatusLeds()[number].setStatus("off");
                 Main.getPowerManager().getPowerLine(number).resetLine();
                 Main.getOfflineButtons()[number].setDisable(false);
@@ -258,7 +295,7 @@ public class PowerLine {
     public void finishStartup() {
         Platform.runLater(new Runnable() {
             public void run() {
-                Main.getStatusLeds()[number].setBlink(false);
+                Main.getStatusLeds()[number].setSlowBlink(false);
                 if (Main.getOfflineButtons()[number].isSelected() == true) {
                     Main.getStatusLeds()[number].setStatus("warning");
                 } else {
@@ -273,6 +310,18 @@ public class PowerLine {
         });
     }
     
+    // Setting up timelines for extra fluctuation
+    
+    private Timeline setupFluctuationTimeline(int interval) {
+        Timeline timeline = new Timeline(
+        new KeyFrame(Duration.millis(interval),
+            event -> {
+                fluctuateLine();
+                }
+            ));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        return timeline;
+    }
     
     // Calculating data for the oscilloscope
     
@@ -298,7 +347,7 @@ public class PowerLine {
         this.outputData.addAll(dataSeriesOutput, dataSeriesReactor, dataSeriesControl);
         if (this.online == true) {
             rms = Math.sqrt(rmsSum / 40);
-            setOutputPower(100 - (rms / 2));
+            setOutputPower(100 - (rms));
         }
     }
     
@@ -354,14 +403,22 @@ public class PowerLine {
                 this.rmsSum = this.rmsSum + Math.pow(reactorValue + controlValue, 2);
             }
         }
+        if (this.online == true) {
+            rms = Math.sqrt(rmsSum / 40);
+            setOutputPower(100 - (rms));
+            if (getOutputPower().doubleValue() > 100.0) {
+                Main.getLineOutputGauges()[number].setLedOn(true);
+            } else {
+                Main.getLineOutputGauges()[number].setLedOn(false);
+            }
+        }
+        channel.updateOutput();
         if (overshoot == true) {
             setUnstable();
         } else {
             setStable();
         }
-        if (this.online == true) {
-            rms = Math.sqrt(rmsSum / 40);
-            setOutputPower(100 - rms);
-        }
     }
+    
+    
 }
