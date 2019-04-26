@@ -119,10 +119,10 @@ public class Manager {
         Platform.runLater(new Runnable() {
             public void run() {
                 for (int i = 0; i < 2; i++) {
-                    if (Main.getPowerManager().getPowerChannel(i).getLeftBreaker().getBreakerDelta() != 0.0) {
+                    if (Main.getPowerManager().getPowerChannel(i).getLeftBreaker().getBreakerDelta().doubleValue() != 0.0) {
                         Main.getPowerManager().getPowerChannel(i).getLeftBreaker().applyHeatDelta();
                     }
-                    if (Main.getPowerManager().getPowerChannel(i).getRightBreaker().getBreakerDelta() != 0.0) {
+                    if (Main.getPowerManager().getPowerChannel(i).getRightBreaker().getBreakerDelta().doubleValue() != 0.0) {
                         Main.getPowerManager().getPowerChannel(i).getRightBreaker().applyHeatDelta();
                     }
                 }

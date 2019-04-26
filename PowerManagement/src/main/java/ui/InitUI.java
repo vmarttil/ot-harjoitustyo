@@ -289,113 +289,150 @@ public class InitUI {
         .build();
         GridPane.setRowIndex(gauge, 5);
         GridPane.setColumnIndex(gauge, column);
-        //gauge.setPadding(new Insets(-15, 0, -15, 0));
         gauge.setId("gauge" + column);
         gauge.valueProperty().bind(powerline.getOutputPower());
-        if (powerline.getOutputPower().doubleValue() > 100.0) {
-                gauge.setLedOn(true);
-            } else {
-                gauge.setLedOn(false);
-            }
         return gauge;     
     }
     
-    /*
-    public static VBox createPowerChannelControls(int channel) {
-        VBox powerChannelControlBlock = new VBox();
-        powerChannelControlBlock.setId("powerChannelControls" + channel);
-        HBox balanceControlBlock = Main.getBalanceControlBlocks()[channel];
-        Gauge balanceGauge = Main.getBalanceGauges()[channel];
-        Label channelOutputGauge = Main.getChannelOutputGauges()[channel];
-        powerChannelControlBlock.setAlignment(Pos.CENTER);
-        GridPane.setRowIndex(powerChannelControlBlock, 4);
-        GridPane.setColumnIndex(powerChannelControlBlock, channel * 2);
-        GridPane.setColumnSpan(powerChannelControlBlock, 2);
-        powerChannelControlBlock.getChildren().addAll(channelOutputGauge, balanceGauge, balanceControlBlock);
-        powerChannelControlBlock.setAlignment(Pos.CENTER);
-        return powerChannelControlBlock;
-    } */
-    
     public static StackPane createBreaker(int line) {
         StackPane breaker = new StackPane();
+        breaker.setMouseTransparent(true);
         Image breakerImage;
-        Image breakerButtonIcon;
         // Image for left breaker
         if (line % 2 == 0) {
             breakerImage = new Image(InitUI.class.getClassLoader().getResource("graphics/leftBreaker.png").toString());
-            breakerButtonIcon = new Image(InitUI.class.getClassLoader().getResource("graphics/leftBreakerButton.png").toString());
         } else {
         // Image for right breaker
             breakerImage = new Image(InitUI.class.getClassLoader().getResource("graphics/rightBreaker.png").toString());
-            breakerButtonIcon = new Image(InitUI.class.getClassLoader().getResource("graphics/rightBreakerButton.png").toString());
         }
         ImageView display = new ImageView(breakerImage);
         display.setFitHeight(40.0);
         display.setFitWidth(66.0);
-        breaker.setAlignment(Pos.BOTTOM_CENTER);
+        breaker.setAlignment(Pos.CENTER);
         StatusLed breakerLed = new StatusLed();
         breakerLed.setAlignment(Pos.BOTTOM_CENTER);
-        breakerLed.setStatus("ok");
-        ToggleButton breakerButton = new ToggleButton("Offline");
-        breakerButton.setAlignment(Pos.BOTTOM_CENTER);
-        breakerButton.setTranslateY(11);
-        breakerButton.setGraphic(new ImageView(breakerButtonIcon));
-        breakerButton.setId("breakerButton" + line);
-        breakerButton.setMaxSize(62, 29);
-        breakerButton.setMinSize(62, 29);
+        breakerLed.setStatus("ok");          
+        breaker.getChildren().addAll(display, breakerLed);
+        GridPane.setRowIndex(breaker, 4);
+        GridPane.setColumnIndex(breaker, line);
         if (line % 2 == 0) {
-            breakerButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-                if (breakerButton.isSelected() == true) {
-                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().initialisingBreaker();
-                    breakerButton.setMouseTransparent(true);
-                }
-            }));
+            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().setBreakerLight(breakerLed);
+            breaker.setTranslateX(30);
         } else {
-            breakerButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
-                if (breakerButton.isSelected() == true) {
-                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().initialisingBreaker();
-                    breakerButton.setMouseTransparent(true);
-                }
-            }));            
+            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().setBreakerLight(breakerLed);
+            breaker.setTranslateX(-30);
         }
-        /*
-        Button breakerButton = new Button("Reset");
-        breakerButton.setAlignment(Pos.BOTTOM_LEFT);
-        breakerButton.setMaxSize(60, 30);
+        return breaker;
+    }
+    
+    public static Button createBreakerButton(int line) {
+        Image breakerButtonIcon;
+        // Image for left breaker button
+        if (line % 2 == 0) {
+            breakerButtonIcon = new Image(InitUI.class.getClassLoader().getResource("graphics/leftBreakerButton.png").toString());
+        } else {
+        // Image for right breaker button
+            breakerButtonIcon = new Image(InitUI.class.getClassLoader().getResource("graphics/rightBreakerButton.png").toString());
+        }
+        Button breakerButton = new Button();
         breakerButton.setDisable(true);
+        breakerButton.setTranslateY(-10);
+        breakerButton.setAlignment(Pos.CENTER);
+        ImageView breakerButtonView = new ImageView(breakerButtonIcon);
+        breakerButtonView.setFitHeight(20.0);
+        breakerButtonView.setFitWidth(41.0);
+        //breakerButtonView.setTranslateX(-8);
+        breakerButton.setGraphic(breakerButtonView);
+        breakerButton.setId("breakerButton" + line);
+        breakerButton.setMaxSize(43, 22);
+        breakerButton.setMinSize(43, 22);
+        
         if (line % 2 == 0) {
             breakerButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
                     Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().initialisingBreaker();
-                    breakerButton.setDisable(true);
                 }
             });
         } else {
             breakerButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
                     Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().initialisingBreaker();
-                    breakerButton.setDisable(true);
                 }
-            });    
+            });
         }
-        */
-        breaker.getChildren().addAll(display, breakerLed, breakerButton);
-        GridPane.setRowIndex(breaker, 4);
-        GridPane.setColumnIndex(breaker, line);
-        breaker.setMouseTransparent(true);
+        GridPane.setRowIndex(breakerButton, 4);
+        GridPane.setColumnIndex(breakerButton, line);
+        breakerButton.toFront();
         if (line % 2 == 0) {
             Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().setBreakerButton(breakerButton);
-            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().setBreakerLight(breakerLed);
-            breaker.setTranslateX(30);
             breakerButton.setTranslateX(30);
         } else {
             Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().setBreakerButton(breakerButton);
-            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().setBreakerLight(breakerLed);
-            breaker.setTranslateX(-30);
             breakerButton.setTranslateX(-30);
         }
-        return breaker;
+        return breakerButton;
     }
+    
+    public static Gauge createTempGauge(int column, domain.PowerChannel powerchannel) {
+        Gauge tempGauge = GaugeBuilder  
+        .create()  
+        .minSize(50,50)
+        .prefSize(75,75) // Set the preferred size of the control  
+        .foregroundBaseColor(Color.BLACK)  // Defines a color foreground elements  
+        .title("Temp") // Set the text for the title  
+        .titleColor(Color.BLACK) // Define the color for the title text       
+        .unit("") // Set the text for the unit  
+        .unitColor(Color.TRANSPARENT) // Define the color for the unit  
+        .valueColor(Color.TRANSPARENT) // Define the color for the value text  
+        .decimals(0) // Set the number of decimals for the value/lcd text  
+        .minValue(0) // Set the start value of the scale  
+        .maxValue(1000) // Set the end value of the scale  
+        .startAngle(330) // Start angle of your scale (bottom -> 0, direction -> CCW)  
+        .angleRange(300) // Angle range of your scale starting from the start angle    
+        .tickLabelColor(Color.TRANSPARENT) // Color for tick labels  
+        .majorTickMarksVisible(true) // Major tick marks should be visible  
+        .majorTickMarkType(TickMarkType.LINE) // LINE, DOT, TRIANGLE, TICK_LABEL  
+        .majorTickMarkColor(Color.BLACK) // Color for the major tick marks  
+        .mediumTickMarksVisible(false) // Medium tick marks should be visible   
+        .minorTickMarksVisible(false) // Minor tick marks should be visible  
+        .needleColor(Color.CRIMSON) // Color of the needle  
+        .knobType(Gauge.KnobType.STANDARD) // STANDARD, METAL, PLAIN, FLAT  
+        .knobColor(Color.LIGHTGRAY) // Color that should be used for the center knob  
+        .thresholdVisible(true) // Threshold indicator should be visible  
+        .threshold(800) // Value for the threshold  
+        .thresholdColor(Color.GOLD) // Color for the threshold  
+        .checkThreshold(false) // Check each value against threshold  
+        .onThresholdExceeded(thresholdEvent -> System.out.println("Threshold exceeded"))  
+        .onThresholdUnderrun(thresholdEvent -> System.out.println("Threshold underrun"))    
+        .gradientBarEnabled(true) // Gradient filled bar should be visible  
+        .gradientBarStops(new Stop(0.10, Color.LIGHTBLUE),
+                          new Stop(0.16, Color.LIGHTGREEN),
+                          new Stop(0.35, Color.LIGHTGREEN),
+                          new Stop(0.52, Color.YELLOW),
+                          new Stop(0.68, Color.ORANGE),
+                          new Stop(0.76, Color.ORANGERED),
+                          new Stop(0.89, Color.ORANGERED),
+                          new Stop(0.91, Color.LIGHTBLUE))
+        .sectionsVisible(false)  // Sections will be visible  
+        .sections(new Section(100, 120, Color.RED)) // Sections that will be drawn  
+        .checkSectionsForValue(false) // Check current value against each section  
+        .markersVisible(false) // Markers will be visible  
+        .animated(true) // Needle will be animated  
+        .animationDuration(500)  // Speed of the needle in milliseconds (10 - 10000 ms)  
+        .build();
+        GridPane.setRowIndex(tempGauge, 4);
+        GridPane.setColumnIndex(tempGauge, column);
+        tempGauge.setId("tempGauge" + column);
+        if (column% 2 == 0) {
+            tempGauge.valueProperty().bind(powerchannel.getLeftBreaker().getBreakerHeat());
+            tempGauge.setTranslateX(-50);
+        } else {
+            tempGauge.valueProperty().bind(powerchannel.getRightBreaker().getBreakerHeat());
+            tempGauge.setTranslateX(50);
+        }
+        return tempGauge;     
+    }
+    
     
     public static Slider createBalanceControl(int channel) {
         Slider balanceControl = makeSlider(0, 127, 64, HORIZONTAL, "Balance");        

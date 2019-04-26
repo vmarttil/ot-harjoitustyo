@@ -34,8 +34,8 @@ public class PowerChannel {
         this.outputBalance = new SimpleDoubleProperty(0);
         this.leftBreaker = new Breaker(this, this.leftPowerLine);
         this.rightBreaker = new Breaker(this, this.rightPowerLine);
-        manager.getPowerLine(2 * this.number).setChannel(this);
-        manager.getPowerLine(2 * this.number + 1).setChannel(this);
+        manager.getPowerLine(2 * number).setChannel(this);
+        manager.getPowerLine(2 * number + 1).setChannel(this);
     }
     
     // Getters
@@ -93,18 +93,20 @@ public class PowerChannel {
         double leftOutputPower;
         double rightOutputPower;
         // Checking for breakers
-        if (getLeftBreaker().getStatus().equals("broken") || getLeftBreaker().getStatus().equals("initialising")) {
+        if (this.leftBreaker.getStatus().equals("broken") || this.leftBreaker.getStatus().equals("hot") || this.leftBreaker.getStatus().equals("initialising")) {
             leftInput = 0.0;
         } else {
             leftInput = this.leftPowerLine.getOutputPower().doubleValue();
         }
-        if (getRightBreaker().getStatus().equals("broken") || getRightBreaker().getStatus().equals("initialising")) {
+        if (this.rightBreaker.getStatus().equals("broken") || this.rightBreaker.getStatus().equals("hot") || this.rightBreaker.getStatus().equals("initialising")) {
             rightInput = 0.0;
         } else {
             rightInput = this.rightPowerLine.getOutputPower().doubleValue();
         }
         // Calculate output balance
-        if (leftInput <= rightInput) {         
+        if (leftInput == 0 && rightInput == 0) {
+            balance = (this.balancerValue.intValue() / 2) / 64.0 * 100.0;;
+        } else if (leftInput <= rightInput) {         
             balance = Math.max(((int) Math.round(leftInput / rightInput * 64) - 64) + this.balancerValue.intValue(), -32) / 64.0 * 100.0;
         } else {
             balance = Math.min((63 - (int) Math.round(rightInput / leftInput * 63)) + this.balancerValue.intValue(), 32) / 63.0 * 100.0;
@@ -165,8 +167,8 @@ public class PowerChannel {
             Main.getBalanceGauges()[number].setLedOn(false);
         }
         // Calculate heat production or dissipation in the breakers
-        getLeftBreaker().calculateHeatDelta();
-        getRightBreaker().calculateHeatDelta();
+        this.leftBreaker.calculateHeatDelta();
+        this.rightBreaker.calculateHeatDelta();
         
     }
     

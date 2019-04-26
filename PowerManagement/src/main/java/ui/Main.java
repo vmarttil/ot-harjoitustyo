@@ -18,6 +18,7 @@ import static javafx.geometry.Orientation.HORIZONTAL;
 import static javafx.geometry.Orientation.VERTICAL;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
@@ -52,6 +53,8 @@ public class Main extends Application {
     static Oscilloscope[] oscilloscopes;
     static Gauge[] lineOutputGauges;
     static StackPane[] breakers;
+    static Button[] breakerButtons;
+    static Gauge[] tempGauges;
     static Slider[] balanceControls;
     static VBox[] balanceControlBlocks;
     static Gauge[] balanceGauges;
@@ -72,6 +75,7 @@ public class Main extends Application {
         powerManager.createPowerLines(lines);
         powerManager.createPowerChannels(lines / 2);
         powerManager.startReactorService();
+        powerManager.startHeatService();
         // Create user interface
         primaryStage.setTitle("Power Management Application");
         managerPane = createUserInterface(lines);
@@ -93,6 +97,8 @@ public class Main extends Application {
         oscilloscopes = new Oscilloscope[lines];
         lineOutputGauges = new Gauge[lines];
         breakers = new StackPane[lines];
+        breakerButtons = new Button[lines];
+        tempGauges = new Gauge[lines];
         balanceControls = new Slider[lines / 2];
         balanceControlBlocks = new VBox[lines / 2];        
         balanceGauges = new Gauge[lines / 2];
@@ -124,6 +130,10 @@ public class Main extends Application {
         for (int i = 0; i < channels; i++) {
             breakers[2 * i] = InitUI.createBreaker(2 * i);
             breakers[2 * i + 1] = InitUI.createBreaker(2 * i + 1);
+            breakerButtons[2 * i] = InitUI.createBreakerButton(2 * i);
+            breakerButtons[2 * i + 1] = InitUI.createBreakerButton(2 * i + 1);
+            tempGauges[2 * i] = InitUI.createTempGauge(2 * i, powerManager.getPowerChannel(i));
+            tempGauges[2 * i + 1] = InitUI.createTempGauge(2 * i + 1, powerManager.getPowerChannel(i));
             balanceControls[i] = InitUI.createBalanceControl(i);
             balanceControlBlocks[i] = InitUI.createBalanceControlBlock(i);
             balanceGauges[i] = InitUI.createBalanceGauge(i, powerManager.getPowerChannel(i));
@@ -131,6 +141,10 @@ public class Main extends Application {
             managerPane.getChildren().add(balanceControlBlocks[i]);
             managerPane.getChildren().add(breakers[2 * i]);
             managerPane.getChildren().add(breakers[2 * i + 1]);
+            managerPane.getChildren().add(breakerButtons[2 * i]);
+            managerPane.getChildren().add(breakerButtons[2 * i + 1]);
+            managerPane.getChildren().add(tempGauges[2 * i]);
+            managerPane.getChildren().add(tempGauges[2 * i + 1]);
             managerPane.getChildren().add(balanceGauges[i]);
             managerPane.getChildren().add(channelOutputGauges[i]);
         }

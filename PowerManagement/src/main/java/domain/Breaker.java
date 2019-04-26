@@ -26,21 +26,19 @@ public class Breaker {
     PowerLine line;
     String status;
     SimpleDoubleProperty breakerHeat;
-    double breakerDelta;
+    SimpleDoubleProperty breakerDelta;
     ui.StatusLed breakerLight;
-    ToggleButton breakerButton;
+    Button breakerButton;
     
     
     public Breaker(PowerChannel channel, PowerLine line) {
         this.channel = channel;
         this.line = line;
+        this.status = "ok";
         this.breakerHeat = new SimpleDoubleProperty(0.0);
-        this.breakerDelta = 0.0;
+        this.breakerDelta = new SimpleDoubleProperty(0.0);
     }
 
-    
-    
-    
     // Getters
     
     public String getStatus() {
@@ -51,7 +49,7 @@ public class Breaker {
         return this.breakerHeat;
     }
     
-    public double getBreakerDelta() {
+    public SimpleDoubleProperty getBreakerDelta() {
         return this.breakerDelta;
     }
     
@@ -59,7 +57,7 @@ public class Breaker {
         return this.breakerLight;
     }
     
-    public ToggleButton getBreakerButton() {
+    public Button getBreakerButton() {
         return this.breakerButton;
     }
 
@@ -79,10 +77,14 @@ public class Breaker {
             getBreakerLight().setStatus("warning");
             getBreakerLight().setSlowBlink(true);
             getBreakerLight().setFastBlink(false);
-        } else if (status.equals("broken")) {
+        } else if (status.equals("hot")) {
             getBreakerLight().setStatus("alert");
             getBreakerLight().setSlowBlink(false);
             getBreakerLight().setFastBlink(true);
+        } else if (status.equals("broken")) {
+            getBreakerLight().setStatus("off");
+            getBreakerLight().setSlowBlink(false);
+            getBreakerLight().setFastBlink(false);
         }
     }
     
@@ -90,7 +92,7 @@ public class Breaker {
         this.breakerLight = breakerLight;
     }
     
-    public void setBreakerButton(ToggleButton breakerButton) {
+    public void setBreakerButton(Button breakerButton) {
         this.breakerButton = breakerButton;
     }
     
@@ -98,7 +100,7 @@ public class Breaker {
     
     public void calculateHeatDelta() {
         double heatDelta = 0;
-        if (this.status.equals("ok") || this.status.equals("warning")) {
+        if ((this.status.equals("ok") || this.status.equals("warning")) && this.line.isOnline() == true) {
             // Over- or underdrive heat factor
             heatDelta = heatDelta + ((this.line.getInputPower() - 100.0) / 10);
             // Irregularity heat factor
@@ -124,18 +126,20 @@ public class Breaker {
         }
         // Power draw heat factor
         heatDelta = heatDelta - ((120 - Main.getPowerManager().getMainOutputLevel()) / 10);
-        this.breakerDelta = heatDelta;
+        this.breakerDelta.set(heatDelta);
     }
     
     public void applyHeatDelta() {
-        this.breakerHeat.add(this.breakerDelta);
+        this.breakerHeat.set(this.breakerHeat.doubleValue() + this.breakerDelta.doubleValue());
         if (this.breakerHeat.doubleValue() <= 0) {
             this.breakerHeat.set(0);
         } else if (this.breakerHeat.doubleValue() >= 1000) {
+            setStatus("hot");
+        } else if (this.breakerHeat.doubleValue() >= 800 && getStatus().equals("ok")) {
+            setStatus("warning");
+        } else if (this.status.equals("hot") && this.breakerHeat.doubleValue() < 800 && getBreakerButton().isDisabled() == true) {
             setStatus("broken");
-        } else if (this.status.equals("broken") && this.breakerHeat.doubleValue() < 800 && getBreakerButton().isMouseTransparent() == true) {
-            getBreakerButton().setMouseTransparent(false);
-            getBreakerButton().setSelected(false);
+            getBreakerButton().setDisable(false);
         }
     }
 
@@ -147,7 +151,6 @@ public class Breaker {
                 finishInitialisation();
             }
         };
-        getBreakerButton().setMouseTransparent(true);
         initialisingTimer.schedule(initialisingTask, 60000l);
         
     }
@@ -156,6 +159,7 @@ public class Breaker {
         Platform.runLater(new Runnable() {
             public void run() {
                 setStatus("ok");
+                getBreakerButton().setDisable(true);
             }
         });
     }
