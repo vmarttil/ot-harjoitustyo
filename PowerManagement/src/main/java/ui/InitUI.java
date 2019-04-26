@@ -7,12 +7,9 @@ package ui;
 
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.GaugeBuilder;
-import eu.hansolo.medusa.LcdDesign;
-import eu.hansolo.medusa.LcdFont;
 import eu.hansolo.medusa.Marker;
 import eu.hansolo.medusa.Section;
 import eu.hansolo.medusa.TickMarkType;
-import eu.hansolo.medusa.skins.ModernSkin;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -177,10 +174,10 @@ public class InitUI {
         offlineButton.setId("offlineButton" + column);
         offlineButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             if (offlineButton.isSelected() == true) {
-                Main.powerManager.getPowerLine(column).setOffline();
+                Main.getPowerManager().getPowerLine(column).setOffline();
             }
             if (offlineButton.isSelected() == false) {
-                Main.powerManager.getPowerLine(column).setOnline();
+                Main.getPowerManager().getPowerLine(column).setOnline();
             }
         }));
         return offlineButton;
@@ -191,10 +188,10 @@ public class InitUI {
         shutdownButton.setId("shutdownButton" + column);
         shutdownButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             if (shutdownButton.isSelected() == true) {
-                Main.powerManager.getPowerLine(column).shutdownProcess();
+                Main.getPowerManager().getPowerLine(column).shutdownProcess();
             }
             if (shutdownButton.isSelected() == false) {
-                Main.powerManager.getPowerLine(column).startupProcess();
+                Main.getPowerManager().getPowerLine(column).startupProcess();
             }
         }));
         return shutdownButton;
@@ -350,13 +347,13 @@ public class InitUI {
         if (line % 2 == 0) {
             breakerButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
-                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().initialisingBreaker();
+                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().resetBreaker();
                 }
             });
         } else {
             breakerButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
-                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().initialisingBreaker();
+                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().resetBreaker();
                 }
             });
         }

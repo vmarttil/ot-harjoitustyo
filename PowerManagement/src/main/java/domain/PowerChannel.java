@@ -14,15 +14,15 @@ import ui.Main;
  * @author Ville
  */
 public class PowerChannel {
-    int number;
-    Manager manager;
-    PowerLine leftPowerLine;
-    PowerLine rightPowerLine;
-    Breaker leftBreaker;
-    Breaker rightBreaker;
-    SimpleDoubleProperty outputPower;
-    SimpleIntegerProperty balancerValue;
-    SimpleDoubleProperty outputBalance;
+    private int number;
+    private Manager manager;
+    private PowerLine leftPowerLine;
+    private PowerLine rightPowerLine;
+    private Breaker leftBreaker;
+    private Breaker rightBreaker;
+    private SimpleDoubleProperty outputPower;
+    private SimpleIntegerProperty balancerValue;
+    private SimpleDoubleProperty outputBalance;
     
     public PowerChannel(Manager manager, int number) {
         this.number = number;
@@ -32,8 +32,8 @@ public class PowerChannel {
         this.outputPower = new SimpleDoubleProperty((this.leftPowerLine.getOutputPower().doubleValue() + this.rightPowerLine.getOutputPower().doubleValue()) / 2.0);
         this.balancerValue = new SimpleIntegerProperty(0);
         this.outputBalance = new SimpleDoubleProperty(0);
-        this.leftBreaker = new Breaker(this, this.leftPowerLine);
-        this.rightBreaker = new Breaker(this, this.rightPowerLine);
+        this.leftBreaker = new Breaker(this, this.leftPowerLine, 1000);
+        this.rightBreaker = new Breaker(this, this.rightPowerLine, 1000);
         manager.getPowerLine(2 * number).setChannel(this);
         manager.getPowerLine(2 * number + 1).setChannel(this);
     }
@@ -67,7 +67,6 @@ public class PowerChannel {
     public SimpleDoubleProperty getOutputBalance() {
         return this.outputBalance;
     }
-
     
     // Setters
 
@@ -93,12 +92,12 @@ public class PowerChannel {
         double leftOutputPower;
         double rightOutputPower;
         // Checking for breakers
-        if (this.leftBreaker.getStatus().equals("broken") || this.leftBreaker.getStatus().equals("hot") || this.leftBreaker.getStatus().equals("initialising")) {
+        if (this.leftBreaker.getStatus().equals("broken") || this.leftBreaker.getStatus().equals("hot") || this.leftBreaker.getStatus().equals("resetting")) {
             leftInput = 0.0;
         } else {
             leftInput = this.leftPowerLine.getOutputPower().doubleValue();
         }
-        if (this.rightBreaker.getStatus().equals("broken") || this.rightBreaker.getStatus().equals("hot") || this.rightBreaker.getStatus().equals("initialising")) {
+        if (this.rightBreaker.getStatus().equals("broken") || this.rightBreaker.getStatus().equals("hot") || this.rightBreaker.getStatus().equals("resetting")) {
             rightInput = 0.0;
         } else {
             rightInput = this.rightPowerLine.getOutputPower().doubleValue();

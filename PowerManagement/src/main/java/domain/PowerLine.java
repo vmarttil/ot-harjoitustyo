@@ -5,61 +5,46 @@
  */
 package domain;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
-import javafx.scene.chart.XYChart.Data;
-import javafx.scene.chart.XYChart.Series;
-import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import ui.Main;
-import ui.StatusLed;
 
 /**
  *
  * @author Ville
  */
 public class PowerLine {
-    int number;
-    int stability;
-    Random randomGenerator;
-    Manager manager;
-    Oscillator reactorLine;
-    Fluctuator inputFluctuator;
-    Oscillator inputAdjuster;
-    ObservableList<XYChart.Series<Number, Number>> outputData;
-    boolean online;
-    double inputPower;
-    PowerChannel channel;
-    SimpleDoubleProperty outputPower;
-    double rmsSum;
-    double rms;
-    boolean unstable;
-    Timeline unstableTimeline;
-    int imbalance;
-    Timeline imbalanceTimeline;
-    Timeline severeImbalanceTimeline;
+    private int number;
+    private int stability;
+    private Random randomGenerator;
+    private Manager manager;
+    private Oscillator reactorLine;
+    private Fluctuator inputFluctuator;
+    private Oscillator inputAdjuster;
+    private ObservableList<XYChart.Series<Number, Number>> outputData;
+    private boolean online;
+    private double inputPower;
+    private PowerChannel channel;
+    private SimpleDoubleProperty outputPower;
+    private double rmsSum;
+    private double rms;
+    private boolean unstable;
+    private Timeline unstableTimeline;
+    private int imbalance;
+    private Timeline imbalanceTimeline;
+    private Timeline severeImbalanceTimeline;
     
     public PowerLine(Manager manager, int number) {
         this.stability = 50;

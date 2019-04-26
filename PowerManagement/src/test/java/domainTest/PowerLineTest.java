@@ -1,4 +1,4 @@
-package domain;
+package domainTest;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
  */
 public class PowerLineTest {
     domain.Manager powerManager;
+    int lines;
     
     
     public PowerLineTest() {
@@ -34,8 +35,9 @@ public class PowerLineTest {
     
     @Before
     public void setUp() {
-        powerManager = new domain.Manager();
-        //powerManager.startReactorService(10);
+        lines = 4;
+        powerManager = new domain.Manager(lines);
+        
     }
     
     @After

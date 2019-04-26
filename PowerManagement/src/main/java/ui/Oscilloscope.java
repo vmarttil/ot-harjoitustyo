@@ -6,11 +6,8 @@
 package ui;
 
 import eu.hansolo.fx.smoothcharts.SmoothedChart;
-import java.util.logging.Logger;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -18,11 +15,11 @@ import javafx.scene.layout.StackPane;
  * @author Ville
  */
 public class Oscilloscope extends StackPane {
-    int column;
-    domain.PowerLine powerLine;
-    NumberAxis xAxis;
-    NumberAxis yAxis;
-    SmoothedChart<Number, Number> oscilloscopeChart;
+    private int column;
+    private domain.PowerLine powerLine;
+    private NumberAxis xAxis;
+    private NumberAxis yAxis;
+    private SmoothedChart<Number, Number> oscilloscopeChart;
     
     public Oscilloscope(int column, domain.PowerLine powerLine, int timeframe, int scale) {
         this.column = column;
@@ -34,13 +31,14 @@ public class Oscilloscope extends StackPane {
     private SmoothedChart<Number, Number> createChart(int timeframe, int scale) {        
         this.xAxis = new NumberAxis(0 , timeframe, 10);
         this.yAxis = new NumberAxis(-1 * scale, scale, 20);
-        SmoothedChart<Number, Number> oscilloscopeChart = new SmoothedChart<>(xAxis, yAxis);
+        SmoothedChart<Number, Number> oscilloscopeChart = new SmoothedChart<>(this.xAxis, this.yAxis);
         oscilloscopeChart.setTitle("Reactor Line " + (column + 1));
         oscilloscopeChart.setData(powerLine.getOutputData());
         oscilloscopeChart.setPadding(new Insets(-10, 0, -20, 0));
-        // oscilloscopeChart.setStyle(".chart-plot-background{-fx-background-color: #000000;}");
         return oscilloscopeChart;
     }
+    
+    // Getters
     
     public SmoothedChart<Number, Number> getChart() {
         return this.oscilloscopeChart;
@@ -53,8 +51,4 @@ public class Oscilloscope extends StackPane {
     public NumberAxis getYAxis() {
         return this.yAxis;
     }
-    
-    
-    
-    
 }

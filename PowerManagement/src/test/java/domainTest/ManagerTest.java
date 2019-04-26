@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package domain;
+package domainTest;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
  */
 public class ManagerTest {
     domain.Manager powerManager;
+    int lines;
     
     public ManagerTest() {
     }
@@ -32,6 +33,7 @@ public class ManagerTest {
     
     @Before
     public void setUp() {
+        lines = 4;
     }
     
     @After
@@ -46,8 +48,8 @@ public class ManagerTest {
     
     @Test
     public void ManagerPowerLineCreationControlFrequencyTest() {
-        powerManager = new domain.Manager();
-        for (int i = 0; i < 4; i++) {
+        powerManager = new domain.Manager(lines);
+        for (int i = 0; i < lines; i++) {
             domain.PowerLine line = new domain.PowerLine(powerManager, i);
             powerManager.getPowerLines()[i] = line;
         }
@@ -60,7 +62,7 @@ public class ManagerTest {
     
     @Test
     public void MAnagerPowerLineCreationInputAdjusterTest() {
-        powerManager = new domain.Manager();
+        powerManager = new domain.Manager(lines);
         for (int i = 0; i < 4; i++) {
             domain.PowerLine line = new domain.PowerLine(powerManager, i);
             powerManager.getPowerLines()[i] = line;

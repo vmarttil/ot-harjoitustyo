@@ -12,8 +12,6 @@ import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 /**
@@ -21,16 +19,16 @@ import javafx.util.Duration;
  * @author Ville
  */
 public class StatusLed extends StackPane {
-    String status; 
-    boolean slowBlink;
-    boolean fastBlink;
-    Image offImage;
-    Image okImage;
-    Image warningImage;
-    Image alertImage;
-    ImageView display;
-    Timeline slowBlinkTimeline;
-    Timeline fastBlinkTimeline;
+    private String status; 
+    private boolean slowBlink;
+    private boolean fastBlink;
+    private Image offImage;
+    private Image okImage;
+    private Image warningImage;
+    private Image alertImage;
+    private ImageView display;
+    private Timeline slowBlinkTimeline;
+    private Timeline fastBlinkTimeline;
     
     public StatusLed() {
         this.status = "off";

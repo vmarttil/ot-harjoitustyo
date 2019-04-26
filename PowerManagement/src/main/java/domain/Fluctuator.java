@@ -5,29 +5,26 @@
  */
 package domain;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Random;
-import java.util.logging.Logger;
-import ui.StatusLed;
 
 /**
  * The class defines a fluctuator that generates random variation in the 
- * frequency, amplitude and phase of an oscillator object, based on the 
+ * frequency, amplitude and phase of a linked oscillator object, based on the 
  * parameters defined in the constructor. 
- * 
- * @param   oscillator  The Oscillator object controlled by this fluctuator
- * @param   probability   The probability (from 0 to 100) that the given parameter undergoes fluctuation.
- * @param   volatility  The maximum percentage (from 0 to 100) of the total variation range (+/- 64% of base 
- * value for frequency and amplitude and +/- PI for phase) that a parameter can change in one fluctuation event.
  * 
  * @author Ville Marttila
  */
 public class Fluctuator {
-    Oscillator oscillator;
-    int volatility;
-    Random randomGenerator;
+    private Oscillator oscillator;
+    private int volatility;
+    private Random randomGenerator;
     
+    /**
+     * The constructor defines a fluctuator based on the given parameters.
+     * @param oscillator the oscillator to which the fluctuator is linked
+     * @param volatility the initial volatility, from 0 to 100, of the 
+     * fluctuator 
+     */
     public Fluctuator(Oscillator oscillator, int volatility) {
         this.oscillator = oscillator;
         this.volatility = volatility;
@@ -35,21 +32,42 @@ public class Fluctuator {
     }
     
     // Getters
+    /**
+     * The method returns the maximum percentage (from 0 to 100) of the total 
+     * variation range (+/- 64% of base value for frequency and amplitude and 
+     * +/- PI for phase) that a parameter can change in one fluctuation event.
+     * @return the volatility of the fluctuator as a percentage
+     */
     public int getVolatility() {
         return this.volatility;
     }
     
     // Setters
+    /**
+     * The method sets the default volatility of the fluctuator, or the 
+     * maximum percentage (from 0 to 100) of the total variation range 
+     * (+/- 64% of base value for frequency and amplitude and +/- PI for 
+     * phase) that a parameter can change in one fluctuation event.
+     * @param volatility the volatility to be set for the fluctuator as a percentage
+     */
     public void setVolatility(int volatility) {
         this.volatility = volatility;
     }
     
     // Methods for causing fluctuation in the oscillator
-    
+    /**
+     * The method triggers the fluctuation of the oscillator's frequency, using 
+     * the default volatility of the fluctuator.
+     */
     public void fluctuateFrequency() {
         fluctuateFrequency(this.volatility);
     }
     
+    /**
+     * The method triggers the fluctuation of the oscillator's frequency, using 
+     * the specified volatility.
+     * @param volatility the volatility to be used for this fluctuation event
+     */
     public void fluctuateFrequency(int volatility) {
         int newFrequency = oscillator.getCurrentFrequency().intValue();
         int baseFrequency = oscillator.getBaseFrequency();
@@ -71,10 +89,19 @@ public class Fluctuator {
         oscillator.setCurrentFrequency(newFrequency);
     }
     
+    /**
+     * The method triggers the fluctuation of the oscillator's amplitude, using 
+     * the default volatility of the fluctuator.
+     */
     public void fluctuateAmplitude() {
         fluctuateAmplitude(this.volatility);
     }
     
+    /**
+     * The method triggers the fluctuation of the oscillator's frequency, using 
+     * the specified volatility.
+     * @param volatility the volatility to be used for this fluctuation event
+     */
     public void fluctuateAmplitude(int volatility) {
         int newAmplitude = oscillator.getCurrentAmplitude().intValue();
         int baseAmplitude = oscillator.getBaseAmplitude();
@@ -96,10 +123,19 @@ public class Fluctuator {
         oscillator.setCurrentAmplitude(newAmplitude);
     }
     
+    /**
+     * The method triggers the fluctuation of the oscillator's phase, using 
+     * the default volatility of the fluctuator.
+     */
     public void fluctuatePhase() {
         fluctuatePhase(this.volatility);
     }
     
+    /**
+     * The method triggers the fluctuation of the oscillator's frequency, using 
+     * the specified volatility.
+     * @param volatility the volatility to be used for this fluctuation event
+     */
     public void fluctuatePhase(int volatility) {
         double newPhase = oscillator.getCurrentPhase().doubleValue();
         double basePhase = 0;
@@ -121,15 +157,23 @@ public class Fluctuator {
         oscillator.setCurrentPhase(newPhase);
     }
     
+    /**
+     * The method triggers the simultaneous fluctuation of the oscillator's 
+     * frequency, amplitude and phase, using the default volatility of the 
+     * fluctuator.
+     */
     public void fluctuateAll() {
         fluctuateAll(this.volatility);
     }
     
+    /**
+     * The method triggers the simultaneous fluctuation of the oscillator's 
+     * frequency, amplitude and phase using the specified volatility.
+     * @param volatility the volatility to be used for this fluctuation event
+     */
     public void fluctuateAll(int volatility) {
         fluctuateFrequency(volatility);
         fluctuateAmplitude(volatility);
         fluctuatePhase(volatility);
     }
-    
-    
 }

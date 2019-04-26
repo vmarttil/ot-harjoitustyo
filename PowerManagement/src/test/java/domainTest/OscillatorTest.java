@@ -1,4 +1,4 @@
-package domain;
+package domainTest;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -6,6 +6,8 @@ package domain;
  * and open the template in the editor.
  */
 
+import domain.Fluctuator;
+import domain.Oscillator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
