@@ -16,6 +16,8 @@ import eu.hansolo.medusa.skins.ModernSkin;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -23,6 +25,7 @@ import static javafx.geometry.Orientation.HORIZONTAL;
 import static javafx.geometry.Orientation.VERTICAL;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
@@ -316,12 +319,15 @@ public class InitUI {
     public static StackPane createBreaker(int line) {
         StackPane breaker = new StackPane();
         Image breakerImage;
+        Image breakerButtonIcon;
         // Image for left breaker
         if (line % 2 == 0) {
             breakerImage = new Image(InitUI.class.getClassLoader().getResource("graphics/leftBreaker.png").toString());
+            breakerButtonIcon = new Image(InitUI.class.getClassLoader().getResource("graphics/leftBreakerButton.png").toString());
         } else {
         // Image for right breaker
             breakerImage = new Image(InitUI.class.getClassLoader().getResource("graphics/rightBreaker.png").toString());
+            breakerButtonIcon = new Image(InitUI.class.getClassLoader().getResource("graphics/rightBreakerButton.png").toString());
         }
         ImageView display = new ImageView(breakerImage);
         display.setFitHeight(40.0);
@@ -330,16 +336,63 @@ public class InitUI {
         StatusLed breakerLed = new StatusLed();
         breakerLed.setAlignment(Pos.BOTTOM_CENTER);
         breakerLed.setStatus("ok");
-        breaker.getChildren().addAll(display, breakerLed);
+        ToggleButton breakerButton = new ToggleButton("Offline");
+        breakerButton.setAlignment(Pos.BOTTOM_CENTER);
+        breakerButton.setTranslateY(11);
+        breakerButton.setGraphic(new ImageView(breakerButtonIcon));
+        breakerButton.setId("breakerButton" + line);
+        breakerButton.setMaxSize(62, 29);
+        breakerButton.setMinSize(62, 29);
+        if (line % 2 == 0) {
+            breakerButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+                if (breakerButton.isSelected() == true) {
+                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().initialisingBreaker();
+                    breakerButton.setMouseTransparent(true);
+                }
+            }));
+        } else {
+            breakerButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+                if (breakerButton.isSelected() == true) {
+                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().initialisingBreaker();
+                    breakerButton.setMouseTransparent(true);
+                }
+            }));            
+        }
+        /*
+        Button breakerButton = new Button("Reset");
+        breakerButton.setAlignment(Pos.BOTTOM_LEFT);
+        breakerButton.setMaxSize(60, 30);
+        breakerButton.setDisable(true);
+        if (line % 2 == 0) {
+            breakerButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override public void handle(ActionEvent e) {
+                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().initialisingBreaker();
+                    breakerButton.setDisable(true);
+                }
+            });
+        } else {
+            breakerButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override public void handle(ActionEvent e) {
+                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().initialisingBreaker();
+                    breakerButton.setDisable(true);
+                }
+            });    
+        }
+        */
+        breaker.getChildren().addAll(display, breakerLed, breakerButton);
         GridPane.setRowIndex(breaker, 4);
         GridPane.setColumnIndex(breaker, line);
         breaker.setMouseTransparent(true);
         if (line % 2 == 0) {
-            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).setLeftBreakerLight(breakerLed);
+            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().setBreakerButton(breakerButton);
+            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().setBreakerLight(breakerLed);
             breaker.setTranslateX(30);
+            breakerButton.setTranslateX(30);
         } else {
-            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).setRightBreakerLight(breakerLed);
+            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().setBreakerButton(breakerButton);
+            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().setBreakerLight(breakerLed);
             breaker.setTranslateX(-30);
+            breakerButton.setTranslateX(-30);
         }
         return breaker;
     }

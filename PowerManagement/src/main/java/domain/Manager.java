@@ -24,12 +24,15 @@ public class Manager {
     int lines;
     ReactorService reactorService;
     int baseReactorPeriod;
+    HeatService heatService;
+    int mainOutputLevel; 
     
     public Manager() {
         this.lines = 4;
         this.powerLines = new PowerLine[this.lines];
         this.powerChannels = new PowerChannel[this.lines / 2];  
         this.baseReactorPeriod = 5;
+        this.mainOutputLevel = 100;
     }
     
     // Getters
@@ -50,10 +53,18 @@ public class Manager {
         return this.powerChannels[number];
     }
     
+    public int getMainOutputLevel() {
+        return this.mainOutputLevel;
+    }
+    
     // Setters
     
     public void setReactorPeriod(int period) {
         reactorService.setPeriod(Duration.seconds(period));
+    }
+    
+    public void setMainOutputLevel(int level) {
+        this.mainOutputLevel = level;
     }
     
     // Creating power lines and channels
@@ -72,7 +83,7 @@ public class Manager {
         }
     }
     
-    // Reactor service taking care of timing
+    // Reactor service taking care of timing power fluctuation
     
     static public void triggerFluctuation() {
         Platform.runLater(new Runnable() {
@@ -96,6 +107,42 @@ public class Manager {
             return new Task<Void>() {
                 protected Void call() {
                     triggerFluctuation();
+                    return null;
+                }
+            };
+        }
+    }
+    
+    // Heat service taking care of timing heat accumulation and dissipation
+    
+    static public void checkHeating() {
+        Platform.runLater(new Runnable() {
+            public void run() {
+                for (int i = 0; i < 2; i++) {
+                    if (Main.getPowerManager().getPowerChannel(i).getLeftBreaker().getBreakerDelta() != 0.0) {
+                        Main.getPowerManager().getPowerChannel(i).getLeftBreaker().applyHeatDelta();
+                    }
+                    if (Main.getPowerManager().getPowerChannel(i).getRightBreaker().getBreakerDelta() != 0.0) {
+                        Main.getPowerManager().getPowerChannel(i).getRightBreaker().applyHeatDelta();
+                    }
+                }
+            }
+        });
+    }
+    
+    public void startHeatService() {
+        heatService = new HeatService();
+        heatService.setPeriod(Duration.seconds(1));
+        heatService.start();
+    }
+
+    private static class HeatService extends ScheduledService<Void> {
+        protected Task<Void> createTask() {
+            return new Task<Void>() {
+                protected Void call() {
+                    
+                    checkHeating();
+                    
                     return null;
                 }
             };

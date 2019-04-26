@@ -18,12 +18,11 @@ public class PowerChannel {
     Manager manager;
     PowerLine leftPowerLine;
     PowerLine rightPowerLine;
-    ui.StatusLed leftBreakerLight;
-    ui.StatusLed rightBreakerLight;
+    Breaker leftBreaker;
+    Breaker rightBreaker;
     SimpleDoubleProperty outputPower;
     SimpleIntegerProperty balancerValue;
     SimpleDoubleProperty outputBalance;
-    double periodMultiplier;
     
     public PowerChannel(Manager manager, int number) {
         this.number = number;
@@ -33,7 +32,8 @@ public class PowerChannel {
         this.outputPower = new SimpleDoubleProperty((this.leftPowerLine.getOutputPower().doubleValue() + this.rightPowerLine.getOutputPower().doubleValue()) / 2.0);
         this.balancerValue = new SimpleIntegerProperty(0);
         this.outputBalance = new SimpleDoubleProperty(0);
-        this.periodMultiplier = 1;
+        this.leftBreaker = new Breaker(this, this.leftPowerLine);
+        this.rightBreaker = new Breaker(this, this.rightPowerLine);
         manager.getPowerLine(2 * this.number).setChannel(this);
         manager.getPowerLine(2 * this.number + 1).setChannel(this);
     }
@@ -41,28 +41,33 @@ public class PowerChannel {
     // Getters
 
     public PowerLine getLeftPowerLine() {
-        return leftPowerLine;
+        return this.leftPowerLine;
     }
 
     public PowerLine getRightPowerLine() {
-        return rightPowerLine;
+        return this.rightPowerLine;
     }
 
+    public Breaker getLeftBreaker() {
+        return this.leftBreaker;
+    }
+    
+    public Breaker getRightBreaker() {
+        return this.rightBreaker;
+    }
+    
     public SimpleDoubleProperty getOutputPower() {
-        return outputPower;
+        return this.outputPower;
     }
 
     public SimpleIntegerProperty getBalancerValue() {
-        return balancerValue;
+        return this.balancerValue;
     }
 
     public SimpleDoubleProperty getOutputBalance() {
-        return outputBalance;
+        return this.outputBalance;
     }
 
-    public double getPeriodMultiplier() {
-        return periodMultiplier;
-    }
     
     // Setters
 
@@ -78,17 +83,6 @@ public class PowerChannel {
         this.outputBalance = outputBalance;
     }
 
-    public void setPeriodMultiplier(double periodMultiplier) {
-        this.periodMultiplier = periodMultiplier;
-    }
-    
-    public void setLeftBreakerLight(ui.StatusLed leftBreakerLight) {
-        this.leftBreakerLight = leftBreakerLight;
-    }
-    
-    public void setRightBreakerLight(ui.StatusLed rightBreakerLight) {
-        this.rightBreakerLight = rightBreakerLight;
-    }
     
     // Adjusting the power channel output
     
@@ -99,12 +93,12 @@ public class PowerChannel {
         double leftOutputPower;
         double rightOutputPower;
         // Checking for breakers
-        if (leftBreakerLight.getstatus().equals("alert") || (leftBreakerLight.getstatus().equals("warning") && leftBreakerLight.isSlowBlink())) {
+        if (getLeftBreaker().getStatus().equals("broken") || getLeftBreaker().getStatus().equals("initialising")) {
             leftInput = 0.0;
         } else {
             leftInput = this.leftPowerLine.getOutputPower().doubleValue();
         }
-        if (rightBreakerLight.getstatus().equals("alert") || (rightBreakerLight.getstatus().equals("warning") && rightBreakerLight.isSlowBlink())) {
+        if (getRightBreaker().getStatus().equals("broken") || getRightBreaker().getStatus().equals("initialising")) {
             rightInput = 0.0;
         } else {
             rightInput = this.rightPowerLine.getOutputPower().doubleValue();
@@ -123,35 +117,35 @@ public class PowerChannel {
             this.rightPowerLine.setImbalance(0);
             this.leftPowerLine.setImbalance(0);
         } else if (balance < -15.0 && balance >= -25.0) {
-            this.rightPowerLine.setStability(50);
-            this.leftPowerLine.setStability(50 + (int) Math.round(balance));
-            this.rightPowerLine.setImbalance(0);
-            this.leftPowerLine.setImbalance(0);
-        } else if (balance > 15.0 && balance <= 25.0) {
-            this.rightPowerLine.setStability(50 - (int) Math.round(Math.abs(balance)));
+            this.rightPowerLine.setStability(50 + (int) Math.round(balance));
             this.leftPowerLine.setStability(50);
             this.rightPowerLine.setImbalance(0);
             this.leftPowerLine.setImbalance(0);
+        } else if (balance > 15.0 && balance <= 25.0) {
+            this.rightPowerLine.setStability(50);
+            this.leftPowerLine.setStability(50 - (int) Math.round(Math.abs(balance)));
+            this.rightPowerLine.setImbalance(0);
+            this.leftPowerLine.setImbalance(0);
         } else if (balance < -25.0 && balance >= -40.0) {
+            this.rightPowerLine.setStability(50 + (int) Math.round(balance));
+            this.leftPowerLine.setStability(50);
+            this.rightPowerLine.setImbalance(1);
+            this.leftPowerLine.setImbalance(0);
+        } else if (balance > 25.0 && balance <= 40.0) {
             this.rightPowerLine.setStability(50);
             this.leftPowerLine.setStability(50 + (int) Math.round(balance));
             this.rightPowerLine.setImbalance(0);
             this.leftPowerLine.setImbalance(1);
-        } else if (balance > 25.0 && balance <= 40.0) {
-            this.rightPowerLine.setStability(50 - (int) Math.round(Math.abs(balance)));
-            this.leftPowerLine.setStability(50);
-            this.rightPowerLine.setImbalance(1);
-            this.leftPowerLine.setImbalance(0);
         } else if (balance < -40.0) {
+            this.rightPowerLine.setStability(50 + (int) Math.round(balance));
+            this.leftPowerLine.setStability(50);
+            this.rightPowerLine.setImbalance(2);
+            this.leftPowerLine.setImbalance(0);
+        } else if (balance > 40.0) {
             this.rightPowerLine.setStability(50);
             this.leftPowerLine.setStability(50 + (int) Math.round(balance));
             this.rightPowerLine.setImbalance(0);
             this.leftPowerLine.setImbalance(2);
-        } else if (balance > 40.0) {
-            this.rightPowerLine.setStability(50 - (int) Math.round(Math.abs(balance)));
-            this.leftPowerLine.setStability(50);
-            this.rightPowerLine.setImbalance(2);
-            this.leftPowerLine.setImbalance(0);
         }
         // Calculate output power
         if (this.balancerValue.intValue() >= 0) {
@@ -167,8 +161,15 @@ public class PowerChannel {
         this.outputPower.set((leftOutputPower + rightOutputPower) / 2.0);
         if (getOutputBalance().doubleValue() > 25.0 || getOutputBalance().doubleValue() < -25.0) {
                 Main.getBalanceGauges()[number].setLedOn(true);
-            } else {
-                Main.getBalanceGauges()[number].setLedOn(false);
-            }
+        } else {
+            Main.getBalanceGauges()[number].setLedOn(false);
+        }
+        // Calculate heat production or dissipation in the breakers
+        getLeftBreaker().calculateHeatDelta();
+        getRightBreaker().calculateHeatDelta();
+        
     }
+    
+    
+    
 }

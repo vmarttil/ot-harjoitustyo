@@ -50,7 +50,7 @@ public class PowerLine {
     Oscillator inputAdjuster;
     ObservableList<XYChart.Series<Number, Number>> outputData;
     boolean online;
-    int inputPower;
+    double inputPower;
     PowerChannel channel;
     SimpleDoubleProperty outputPower;
     double rmsSum;
@@ -71,7 +71,7 @@ public class PowerLine {
         this.inputAdjuster = new Oscillator(100, 100, Math.PI);
         this.outputData = FXCollections.observableArrayList();
         this.outputPower = new SimpleDoubleProperty(100);
-        this.inputPower = 100;
+        this.inputPower = 100.0;
         this.online = true;
         this.unstable = false;
         this.unstableTimeline = setupFluctuationTimeline(400);
@@ -85,6 +85,10 @@ public class PowerLine {
     
     public int getStability() {
         return this.stability;
+    }
+    
+    public int getNumber() {
+        return this.number;
     }
     
     public Oscillator getReactorLine() {
@@ -103,7 +107,7 @@ public class PowerLine {
         return outputData;
     }
     
-    public int getInputPower() {
+    public double getInputPower() {
         return this.inputPower;
     }
     
@@ -137,6 +141,14 @@ public class PowerLine {
     
     public boolean isOnline() {
         return this.online;
+    }
+    
+    public boolean isUnstable() {
+        return this.unstable;
+    }
+    
+    public double getRms() {
+        return this.rms;
     }
     
     public int getImbalance() {
@@ -405,7 +417,11 @@ public class PowerLine {
         }
         if (this.online == true) {
             rms = Math.sqrt(rmsSum / 40);
-            setOutputPower(100 - (rms));
+            if (this.inputPower - rms >= 0) {
+                setOutputPower(this.inputPower - rms);
+            } else {
+                setOutputPower(0);
+            }
             if (getOutputPower().doubleValue() > 100.0) {
                 Main.getLineOutputGauges()[number].setLedOn(true);
             } else {
