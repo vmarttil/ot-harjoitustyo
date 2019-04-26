@@ -18,4 +18,12 @@
 | 11.4. | 3    | virheidenkäsittelyyn perehtyminen ja virheidenkäsittelyn alustava toteutus |
 | 12.4. | 1    | kaikkien neljän reaktorilinjan aktivointi ja ohjelman testaus neljällä linjalla |
 | 16.4. | 4    | dokumentaation päivitys ja uusien testien kirjoittaminen |
-|   | 84    |  |
+| 17.4. | 4    | virtakanavien toteutuksen aloittaminen |
+| 18.4. | 3    | virtakanavien ohjelmointia, tasapainotin |
+| 19.4. | 5    | virrankatkaisijoiden grafiikka ja asettelu |
+| 20.4. | 2    | kanavien toimintalogiikan hahmottelu |
+| 22.4. | 4    | kanavien toimintalogiikan toteutus |
+| 24.4. | 6    | kanavien toimintalogiikan testaus ja lämmöntuottomekanismin suunnittelu ja aloitus |
+| 25.4. | 8    | lämmöntuottomekanismin toteutus |
+| 26.4. | 5    | testausta ja dokumentaation päivitys |
+|       | 121  | Yhteensä
