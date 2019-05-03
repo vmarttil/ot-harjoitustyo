@@ -45,7 +45,7 @@ public class Main extends Application {
     private static Slider[] balanceControls;
     private static VBox[] balanceControlBlocks;
     private static Gauge[] balanceGauges;
-    private static Label[] channelOutputGauges;
+    private static Gauge[] channelOutputGauges;
     
     /*
     @Override
@@ -96,7 +96,7 @@ public class Main extends Application {
         balanceControls = new Slider[lines / 2];
         balanceControlBlocks = new VBox[lines / 2];        
         balanceGauges = new Gauge[lines / 2];
-        channelOutputGauges = new Label[lines / 2];
+        channelOutputGauges = new Gauge[lines / 2];
         generatePowerLineControls(lines);
         generatePowerChannelControls(lines / 2);
         return managerPane;
@@ -329,7 +329,7 @@ public class Main extends Application {
      * gauges of each power channel (temporarily as Label objects).
      * @return array of temperature gauges
      */
-    public static Label[] getChannelOutputGauges() {
+    public static Gauge[] getChannelOutputGauges() {
         return channelOutputGauges;
     }
     

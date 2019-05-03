@@ -5,6 +5,7 @@
  */
 package domain;
 
+import eu.hansolo.medusa.Gauge;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -18,6 +19,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ToggleButton;
 import javafx.util.Duration;
 import ui.Main;
 
@@ -45,6 +47,10 @@ public class PowerLine {
     private int imbalance;
     private Timeline imbalanceTimeline;
     private Timeline severeImbalanceTimeline;
+    private ToggleButton shutdownButton;
+    private ToggleButton offlineButton;
+    private ui.StatusLed statusLed;
+    private Gauge lineOutputGauge;
     
     public PowerLine(Manager manager, int number) {
         this.stability = 50;
@@ -74,6 +80,10 @@ public class PowerLine {
     
     public int getNumber() {
         return this.number;
+    }
+    
+    public Manager getManager() {
+        return this.manager;
     }
     
     public Oscillator getReactorLine() {
@@ -140,6 +150,22 @@ public class PowerLine {
         return this.imbalance;
     }
     
+    public ToggleButton getOfflineButton() {
+        return this.offlineButton;
+    }
+    
+    public ToggleButton getShutdownButton() {
+        return this.shutdownButton;
+    }
+    
+    public ui.StatusLed getStatusLed() {
+        return this.statusLed;
+    }
+    
+    public Gauge getLineOutputGauge() {
+        return this.lineOutputGauge;
+    }
+    
     // Setters
 
     public void setStability(int stability) {
@@ -160,41 +186,41 @@ public class PowerLine {
     }
     
     public void setOnline() {
-        if (Main.getShutdownButtons()[number].isSelected() == false) {
+        if (this.shutdownButton.isSelected() == false) {
             this.online = true;
-            Main.getStatusLeds()[number].setStatus("ok");
+            this.statusLed.setStatus("ok");
             this.updateOscilloscopeData();
         }
     }
     
     public void setOffline() {
-        if (Main.getShutdownButtons()[number].isSelected() == false) {
+        if (this.shutdownButton.isSelected() == false) {
             this.online = false;
-            Main.getStatusLeds()[number].setStatus("warning");
+            this.statusLed.setStatus("warning");
             this.setOutputPower(0);
-            channel.updateOutput();
+            this.channel.updateOutput();
         }
     }
     
     public void setUnstable() {
         this.unstable = true;
         this.unstableTimeline.play();
-        if (Main.getOfflineButtons()[number].isSelected() == false) {
-            Main.getStatusLeds()[number].setStatus("alert");
-            Main.getStatusLeds()[number].setFastBlink(true);
+        if (this.offlineButton.isSelected() == false) {
+            this.statusLed.setStatus("alert");
+            this.statusLed.setFastBlink(true);
         }
     }
     
     public void setStable() {
         this.unstable = false;
         this.unstableTimeline.stop();
-        Main.getStatusLeds()[number].setFastBlink(false);
-        if (Main.getShutdownButtons()[number].isSelected() == true) {
-            Main.getStatusLeds()[number].setStatus("off");
-        } else if (Main.getOfflineButtons()[number].isSelected() == true) {
-            Main.getStatusLeds()[number].setStatus("warning");
+        this.statusLed.setFastBlink(false);
+        if (this.shutdownButton.isSelected() == true) {
+            this.statusLed.setStatus("off");
+        } else if (this.offlineButton.isSelected() == true) {
+            this.statusLed.setStatus("warning");
         } else {
-            Main.getStatusLeds()[number].setStatus("ok");
+            this.statusLed.setStatus("ok");
         } 
     }
     
@@ -212,9 +238,29 @@ public class PowerLine {
         }
     }
     
+    public void setOfflineButton(ToggleButton offlineButton) {
+        this.offlineButton = offlineButton;
+    }
+    
+    public void setShutdownButton(ToggleButton shutdownButton) {
+        this.shutdownButton = shutdownButton;
+    }
+    
+    public void setStatusLed(ui.StatusLed statusLed) {
+        this.statusLed = statusLed;
+    }
+    
+    public void setLineOutputGauge(Gauge lineOutputGauge) {
+        this.lineOutputGauge = lineOutputGauge;
+    }
+    
     // Adjusting the power line
     
     public void fluctuateLine() {
+        fluctuateLine(this.randomGenerator);
+    }
+    
+    public void fluctuateLine(Random randomGenerator) {
         if (this.online == true) {
             if (randomGenerator.nextInt(100) > this.stability) {
                 inputFluctuator.fluctuateFrequency();
@@ -246,15 +292,15 @@ public class PowerLine {
                 finishShutdown();
             }
         };
-        if (Main.getOfflineButtons()[number].isSelected() == false) {
+        if (this.offlineButton.isSelected() == false) {
             this.online = false;
-            Main.getStatusLeds()[number].setStatus("warning");
+            this.statusLed.setStatus("warning");
             this.setOutputPower(0);
-            Main.getOfflineButtons()[number].setSelected(true);
+            this.offlineButton.setSelected(true);
         }
-        Main.getStatusLeds()[number].setSlowBlink(true);
-        Main.getOfflineButtons()[number].setDisable(true);
-        Main.getShutdownButtons()[number].setDisable(true);
+        this.statusLed.setSlowBlink(true);
+        this.offlineButton.setDisable(true);
+        this.shutdownButton.setDisable(true);
         shutdownTimer.schedule(shutdownTask, 10000l);
     }
     
@@ -265,46 +311,23 @@ public class PowerLine {
                 finishStartup();
             }
         };
-        if (Main.getOfflineButtons()[number].isSelected() == true) {
-            Main.getStatusLeds()[number].setStatus("warning");
+        if (this.offlineButton.isSelected() == true) {
+            this.statusLed.setStatus("warning");
         } else {
-            Main.getStatusLeds()[number].setStatus("ok");
+            this.statusLed.setStatus("ok");
         }
-        Main.getStatusLeds()[number].setSlowBlink(true);
-        Main.getOfflineButtons()[number].setDisable(true);
-        Main.getShutdownButtons()[number].setDisable(true);
+        this.statusLed.setSlowBlink(true);
+        this.offlineButton.setDisable(true);
+        this.shutdownButton.setDisable(true);
         startupTimer.schedule(startupTask, 10000l);
     }
     
     public void finishShutdown() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                Main.getStatusLeds()[number].setSlowBlink(false);
-                Main.getStatusLeds()[number].setStatus("off");
-                Main.getPowerManager().getPowerLine(number).resetLine();
-                Main.getOfflineButtons()[number].setDisable(false);
-                Main.getShutdownButtons()[number].setDisable(false);
-                Main.getShutdownButtons()[number].setText("Startup");
-            }
-        });
+        Platform.runLater(new ShutdownFinish(this));
     }
     
     public void finishStartup() {
-        Platform.runLater(new Runnable() {
-            public void run() {
-                Main.getStatusLeds()[number].setSlowBlink(false);
-                if (Main.getOfflineButtons()[number].isSelected() == true) {
-                    Main.getStatusLeds()[number].setStatus("warning");
-                } else {
-                    Main.getStatusLeds()[number].setStatus("ok");
-                    Main.getPowerManager().getPowerLine(number).setOnline();
-                    Main.getPowerManager().getPowerLine(number).updateOscilloscopeData();
-                }
-                Main.getOfflineButtons()[number].setDisable(false);
-                Main.getShutdownButtons()[number].setDisable(false);
-                Main.getShutdownButtons()[number].setText("Shutdown");
-            }
-        });
+        Platform.runLater(new StartupFinish(this));
     }
     
     // Setting up timelines for extra fluctuation
@@ -331,17 +354,17 @@ public class PowerLine {
         int controlAmplitude = getControlAmplitude().intValue();
         double controlPhase = getControlPhase().doubleValue();
         XYChart.Series<Number, Number> dataSeriesOutput = new XYChart.Series<>();
-        XYChart.Series<Number, Number> dataSeriesReactor = new XYChart.Series<>();
-        XYChart.Series<Number, Number> dataSeriesControl = new XYChart.Series<>();
+        //XYChart.Series<Number, Number> dataSeriesReactor = new XYChart.Series<>();
+        //XYChart.Series<Number, Number> dataSeriesControl = new XYChart.Series<>();
         for (int i = 0; i < 40; i++) {
-            createOscilloscopeDatapoint(dataSeriesOutput, dataSeriesReactor, dataSeriesControl, 
+            createOscilloscopeDatapoint(dataSeriesOutput, /*dataSeriesReactor, dataSeriesControl, */
                                         reactorFrequency, reactorAmplitude, reactorPhase, 
                                         controlFrequency, controlAmplitude, controlPhase, i);
         }
         dataSeriesOutput.setName("Reactor" + number + "OutputData");
-        dataSeriesReactor.setName("Reactor" + number + "ReactorData");
-        dataSeriesControl.setName("Reactor" + number + "ControlData");
-        this.outputData.addAll(dataSeriesOutput, dataSeriesReactor, dataSeriesControl);
+        // dataSeriesReactor.setName("Reactor" + number + "ReactorData");
+        // dataSeriesControl.setName("Reactor" + number + "ControlData");
+        this.outputData.addAll(dataSeriesOutput/*, dataSeriesReactor, dataSeriesControl */);
         if (this.online == true) {
             rms = Math.sqrt(rmsSum / 40);
             setOutputPower(100 - (rms));
@@ -349,25 +372,25 @@ public class PowerLine {
     }
     
     private void createOscilloscopeDatapoint(XYChart.Series<Number, Number> dataSeriesOutput, 
-                                             XYChart.Series<Number, Number> dataSeriesReactor, 
-                                             XYChart.Series<Number, Number> dataSeriesControl,
+                                             //XYChart.Series<Number, Number> dataSeriesReactor, 
+                                             //XYChart.Series<Number, Number> dataSeriesControl,
                                              int reactorFrequency, int reactorAmplitude, double reactorPhase,
                                              int controlFrequency, int controlAmplitude, double controlPhase, 
                                              int i) {
         XYChart.Data<Number, Number> datapointOutput = new XYChart.Data<>();
-        XYChart.Data<Number, Number> datapointReactor = new XYChart.Data<>();
-        XYChart.Data<Number, Number> datapointControl = new XYChart.Data<>();
+        // XYChart.Data<Number, Number> datapointReactor = new XYChart.Data<>();
+        // XYChart.Data<Number, Number> datapointControl = new XYChart.Data<>();
         Double reactorValue = reactorAmplitude * Math.sin(2 * Math.PI * reactorFrequency * ((double) i * 5 / 10000) + reactorPhase);
         Double controlValue = controlAmplitude * Math.sin(2 * Math.PI * controlFrequency * ((double) i * 5 / 10000) + controlPhase);
         datapointOutput.setXValue((Number) (i * 5));
         datapointOutput.setYValue((Number) (reactorValue + controlValue));
         dataSeriesOutput.getData().add(datapointOutput);
-        datapointReactor.setXValue((Number) (i * 5));
-        datapointReactor.setYValue((Number) (reactorValue));
-        dataSeriesReactor.getData().add(datapointReactor);
-        datapointControl.setXValue((Number) (i * 5));
-        datapointControl.setYValue((Number) (reactorValue));
-        dataSeriesControl.getData().add(datapointControl);
+        // datapointReactor.setXValue((Number) (i * 5));
+        // datapointReactor.setYValue((Number) (reactorValue));
+        // dataSeriesReactor.getData().add(datapointReactor);
+        // datapointControl.setXValue((Number) (i * 5));
+        // datapointControl.setYValue((Number) (reactorValue));
+        // dataSeriesControl.getData().add(datapointControl);
         if (this.online == true) {
             this.rmsSum = this.rmsSum + Math.pow(reactorValue + controlValue, 2);
         }
@@ -394,8 +417,8 @@ public class PowerLine {
             } else {
                 this.outputData.get(0).getData().get(i).setYValue(reactorValue + controlValue);
             }
-            this.outputData.get(1).getData().get(i).setYValue(reactorValue);
-            this.outputData.get(2).getData().get(i).setYValue(controlValue);
+            // this.outputData.get(1).getData().get(i).setYValue(reactorValue);
+            // this.outputData.get(2).getData().get(i).setYValue(controlValue);
             if (this.online == true) {
                 this.rmsSum = this.rmsSum + Math.pow(reactorValue + controlValue, 2);
             }
@@ -408,9 +431,9 @@ public class PowerLine {
                 setOutputPower(0);
             }
             if (getOutputPower().doubleValue() > 100.0) {
-                Main.getLineOutputGauges()[number].setLedOn(true);
+                this.lineOutputGauge.setLedOn(true);
             } else {
-                Main.getLineOutputGauges()[number].setLedOn(false);
+                this.lineOutputGauge.setLedOn(false);
             }
         }
         channel.updateOutput();
@@ -420,6 +443,45 @@ public class PowerLine {
             setStable();
         }
     }
+}
+
+class ShutdownFinish implements Runnable {
+    PowerLine powerLine;
     
+    public ShutdownFinish(PowerLine powerLine) {
+        this.powerLine = powerLine;
+    }
     
+    @Override
+    public void run() {
+        this.powerLine.getStatusLed().setSlowBlink(false);
+        this.powerLine.getStatusLed().setStatus("off");
+        this.powerLine.resetLine();
+        this.powerLine.getOfflineButton().setDisable(false);
+        this.powerLine.getShutdownButton().setDisable(false);
+        this.powerLine.getShutdownButton().setText("Startup");
+    }
+}
+
+class StartupFinish implements Runnable {
+    PowerLine powerLine;
+    
+    public StartupFinish(PowerLine powerLine) {
+        this.powerLine = powerLine;
+    }
+    
+    @Override
+    public void run() {
+        this.powerLine.getStatusLed().setSlowBlink(false);
+        if (this.powerLine.getOfflineButton().isSelected() == true) {
+            this.powerLine.getStatusLed().setStatus("warning");
+        } else {
+            this.powerLine.getStatusLed().setStatus("ok");
+            this.powerLine.setOnline();
+            this.powerLine.updateOscilloscopeData();
+        }
+        this.powerLine.getOfflineButton().setDisable(false);
+        this.powerLine.getShutdownButton().setDisable(false);
+        this.powerLine.getShutdownButton().setText("Shutdown");
+    }
 }

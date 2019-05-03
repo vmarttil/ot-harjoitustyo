@@ -17,8 +17,14 @@ import static org.junit.Assert.*;
  * @author Ville
  */
 public class ManagerTest {
-    domain.Manager powerManager;
-    int lines;
+    private int lines;
+    private domain.Manager manager;
+    private domain.PowerLine line1;
+    private domain.PowerLine line2;
+    private domain.PowerLine line3;
+    private domain.PowerLine line4;
+    private domain.PowerChannel channel1;
+    private domain.PowerChannel channel2;
     
     public ManagerTest() {
     }
@@ -34,6 +40,15 @@ public class ManagerTest {
     @Before
     public void setUp() {
         lines = 4;
+        manager = new domain.Manager(lines);
+        manager.createPowerLines(lines);
+        manager.createPowerChannels(lines / 2);
+        line1 = manager.getPowerLine(0);
+        line2 = manager.getPowerLine(1);
+        line3 = manager.getPowerLine(2);
+        line4 = manager.getPowerLine(3);
+        channel1 = manager.getPowerChannel(0);
+        channel2 = manager.getPowerChannel(1);
     }
     
     @After
@@ -48,33 +63,23 @@ public class ManagerTest {
     
     @Test
     public void ManagerPowerLineCreationControlFrequencyTest() {
-        powerManager = new domain.Manager(lines);
-        for (int i = 0; i < lines; i++) {
-            domain.PowerLine line = new domain.PowerLine(powerManager, i);
-            powerManager.getPowerLines()[i] = line;
-        }
-        int line0Freq = powerManager.getPowerLine(0).getControlFrequency().intValue();
-        int line1Freq = powerManager.getPowerLine(1).getControlFrequency().intValue();
-        int line2Freq = powerManager.getPowerLine(2).getControlFrequency().intValue();
-        int line3Freq = powerManager.getPowerLine(3).getControlFrequency().intValue();
+        int line0Freq = line1.getControlFrequency().intValue();
+        int line1Freq = line2.getControlFrequency().intValue();
+        int line2Freq = line3.getControlFrequency().intValue();
+        int line3Freq = line4.getControlFrequency().intValue();
         assertEquals(400, line0Freq + line1Freq + line2Freq + line3Freq);
     }
     
     @Test
-    public void MAnagerPowerLineCreationInputAdjusterTest() {
-        powerManager = new domain.Manager(lines);
-        for (int i = 0; i < 4; i++) {
-            domain.PowerLine line = new domain.PowerLine(powerManager, i);
-            powerManager.getPowerLines()[i] = line;
-        }
-        powerManager.getPowerLine(0).getInputAdjuster().setCurrentFrequency(120);
-        powerManager.getPowerLine(1).getInputAdjuster().setCurrentFrequency(80);
-        powerManager.getPowerLine(2).getInputAdjuster().setCurrentFrequency(130);
-        powerManager.getPowerLine(3).getInputAdjuster().setCurrentFrequency(90);
-        int line0Freq = powerManager.getPowerLine(0).getControlFrequency().intValue();
-        int line1Freq = powerManager.getPowerLine(1).getControlFrequency().intValue();
-        int line2Freq = powerManager.getPowerLine(2).getControlFrequency().intValue();
-        int line3Freq = powerManager.getPowerLine(3).getControlFrequency().intValue();
+    public void ManagerPowerLineCreationInputAdjusterTest() {
+        line1.getInputAdjuster().setCurrentFrequency(120);
+        line2.getInputAdjuster().setCurrentFrequency(80);
+        line3.getInputAdjuster().setCurrentFrequency(130);
+        line4.getInputAdjuster().setCurrentFrequency(90);
+        int line0Freq = line1.getControlFrequency().intValue();
+        int line1Freq = line2.getControlFrequency().intValue();
+        int line2Freq = line3.getControlFrequency().intValue();
+        int line3Freq = line4.getControlFrequency().intValue();
         assertEquals(420, line0Freq + line1Freq + line2Freq + line3Freq);
     }
     

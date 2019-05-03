@@ -21,6 +21,7 @@ import ui.Main;
  * @author Ville
  */
 public class Breaker {
+    private Manager manager;
     private PowerChannel channel;
     private PowerLine line;
     private String status;
@@ -39,6 +40,7 @@ public class Breaker {
      * @param threshold the threshold at which the breaker breaks
      */
     public Breaker(PowerChannel channel, PowerLine line, int threshold) {
+        this.manager = channel.getManager();
         this.channel = channel;
         this.line = line;
         this.breakThreshold = threshold;
@@ -142,6 +144,7 @@ public class Breaker {
             getBreakerLight().setFastBlink(true);   
         }
     }
+    
     /**
      * The method associates the StatusLed object given as a parameter with 
      * this breaker.
@@ -181,7 +184,7 @@ public class Breaker {
             heatDelta = heatDelta + calculateImbalanceHeat();
         }
         // Power draw heat factor
-        heatDelta = heatDelta - ((120 - Main.getPowerManager().getMainOutputLevel()) / 10);
+        heatDelta = heatDelta - ((120 - this.manager.getMainOutputLevel()) / 10);
         this.breakerDelta.set(heatDelta);
     }
     

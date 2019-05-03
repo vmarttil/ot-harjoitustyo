@@ -5,6 +5,7 @@
  */
 package domain;
 
+import eu.hansolo.medusa.Gauge;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import ui.Main;
@@ -23,6 +24,7 @@ public class PowerChannel {
     private SimpleDoubleProperty outputPower;
     private SimpleIntegerProperty balancerValue;
     private SimpleDoubleProperty outputBalance;
+    private Gauge balanceGauge;
     
     public PowerChannel(Manager manager, int number) {
         this.number = number;
@@ -40,6 +42,14 @@ public class PowerChannel {
     
     // Getters
 
+    public int getNumber() {
+        return this.number;
+    }
+    
+    public Manager getManager() {
+        return this.manager;
+    }
+    
     public PowerLine getLeftPowerLine() {
         return this.leftPowerLine;
     }
@@ -68,6 +78,10 @@ public class PowerChannel {
         return this.outputBalance;
     }
     
+    public Gauge getBalanceGauge() {
+        return this.balanceGauge;
+    }
+    
     // Setters
 
     public void setOutputPower(SimpleDoubleProperty outputPower) {
@@ -80,6 +94,10 @@ public class PowerChannel {
 
     public void setOutputBalance(SimpleDoubleProperty outputBalance) {
         this.outputBalance = outputBalance;
+    }
+    
+    public void setBalanceGauge(Gauge balanceGauge) {
+        this.balanceGauge = balanceGauge;
     }
 
     
@@ -161,9 +179,9 @@ public class PowerChannel {
         }
         this.outputPower.set((leftOutputPower + rightOutputPower) / 2.0);
         if (getOutputBalance().doubleValue() > 25.0 || getOutputBalance().doubleValue() < -25.0) {
-                Main.getBalanceGauges()[number].setLedOn(true);
+            this.balanceGauge.setLedOn(true);
         } else {
-            Main.getBalanceGauges()[number].setLedOn(false);
+            this.balanceGauge.setLedOn(false);
         }
         // Calculate heat production or dissipation in the breakers
         this.leftBreaker.calculateHeatDelta();

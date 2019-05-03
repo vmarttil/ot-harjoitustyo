@@ -43,7 +43,8 @@ import javafx.scene.paint.Stop;
  */
 
 public class InitUI {
-
+    private static domain.Manager manager = Main.getPowerManager();
+    
     public static GridPane createManagerPane(int columns) {
         GridPane managerPane = new GridPane();
         // Position the manager pane at the center of the screen, both vertically and horizontally
@@ -126,12 +127,12 @@ public class InitUI {
     
     public static Slider createFrequencyControl(int column) {
         Slider frequencyControl = makeSlider(0, 127, 64, VERTICAL, "Frequency");
-        int baseFrequency = Main.getPowerManager().getPowerLine(column).getInputAdjuster().getBaseFrequency();
+        int baseFrequency = manager.getPowerLine(column).getInputAdjuster().getBaseFrequency();
         frequencyControl.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                Main.getPowerManager().getPowerLine(column).getInputAdjuster().setCurrentFrequency((int) Math.round((newValue.intValue() - 64) / 100.0 * baseFrequency + baseFrequency));
-                Main.getPowerManager().getPowerLine(column).updateOscilloscopeData();
+                manager.getPowerLine(column).getInputAdjuster().setCurrentFrequency((int) Math.round((newValue.intValue() - 64) / 100.0 * baseFrequency + baseFrequency));
+                manager.getPowerLine(column).updateOscilloscopeData();
             }
         });
         return frequencyControl;
@@ -139,12 +140,12 @@ public class InitUI {
     
     public static Slider createAmplitudeControl(int column) {
         Slider amplitudeControl = makeSlider(0, 127, 64, VERTICAL, "Amplitude");        
-        int baseAmplitude = Main.getPowerManager().getPowerLine(column).getInputAdjuster().getBaseAmplitude();
+        int baseAmplitude = manager.getPowerLine(column).getInputAdjuster().getBaseAmplitude();
         amplitudeControl.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                Main.getPowerManager().getPowerLine(column).getInputAdjuster().setCurrentAmplitude((int) Math.round((newValue.intValue() - 64) / 100.0 * baseAmplitude + baseAmplitude));
-                Main.getPowerManager().getPowerLine(column).updateOscilloscopeData();
+                manager.getPowerLine(column).getInputAdjuster().setCurrentAmplitude((int) Math.round((newValue.intValue() - 64) / 100.0 * baseAmplitude + baseAmplitude));
+                manager.getPowerLine(column).updateOscilloscopeData();
             }
         });
         return amplitudeControl;
@@ -152,12 +153,12 @@ public class InitUI {
     
     public static Slider createPhaseControl(int column) {
         Slider phaseControl = makeSlider(0, 127, 64, HORIZONTAL, "Phase");
-        double basePhase = Main.getPowerManager().getPowerLine(column).getInputAdjuster().getBasePhase();
+        double basePhase = manager.getPowerLine(column).getInputAdjuster().getBasePhase();
         phaseControl.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                Main.getPowerManager().getPowerLine(column).getInputAdjuster().setCurrentPhase((newValue.intValue() - 64) / 100.0 * Math.PI + basePhase);
-                Main.getPowerManager().getPowerLine(column).updateOscilloscopeData();
+                manager.getPowerLine(column).getInputAdjuster().setCurrentPhase((newValue.intValue() - 64) / 100.0 * Math.PI + basePhase);
+                manager.getPowerLine(column).updateOscilloscopeData();
             }
         });
         return phaseControl;
@@ -166,6 +167,7 @@ public class InitUI {
     public static StatusLed createStatusLed(int column) {
         StatusLed statusLed = new StatusLed();
         statusLed.setId("statusLed" + column);
+        manager.getPowerLine(column).setStatusLed(statusLed);
         return statusLed;
     }
     
@@ -174,12 +176,13 @@ public class InitUI {
         offlineButton.setId("offlineButton" + column);
         offlineButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             if (offlineButton.isSelected() == true) {
-                Main.getPowerManager().getPowerLine(column).setOffline();
+                manager.getPowerLine(column).setOffline();
             }
             if (offlineButton.isSelected() == false) {
-                Main.getPowerManager().getPowerLine(column).setOnline();
+                manager.getPowerLine(column).setOnline();
             }
         }));
+        manager.getPowerLine(column).setOfflineButton(offlineButton);
         return offlineButton;
     }
     
@@ -188,12 +191,13 @@ public class InitUI {
         shutdownButton.setId("shutdownButton" + column);
         shutdownButton.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             if (shutdownButton.isSelected() == true) {
-                Main.getPowerManager().getPowerLine(column).shutdownProcess();
+                manager.getPowerLine(column).shutdownProcess();
             }
             if (shutdownButton.isSelected() == false) {
-                Main.getPowerManager().getPowerLine(column).startupProcess();
+                manager.getPowerLine(column).startupProcess();
             }
         }));
+        manager.getPowerLine(column).setShutdownButton(shutdownButton);
         return shutdownButton;
     }
     
@@ -288,12 +292,12 @@ public class InitUI {
         GridPane.setColumnIndex(gauge, column);
         gauge.setId("gauge" + column);
         gauge.valueProperty().bind(powerline.getOutputPower());
+        powerline.setLineOutputGauge(gauge);
         return gauge;     
     }
     
     public static StackPane createBreaker(int line) {
         StackPane breaker = new StackPane();
-        breaker.setMouseTransparent(true);
         Image breakerImage;
         // Image for left breaker
         if (line % 2 == 0) {
@@ -303,20 +307,22 @@ public class InitUI {
             breakerImage = new Image(InitUI.class.getClassLoader().getResource("graphics/rightBreaker.png").toString());
         }
         ImageView display = new ImageView(breakerImage);
+        display.setMouseTransparent(true);
         display.setFitHeight(40.0);
         display.setFitWidth(66.0);
         breaker.setAlignment(Pos.CENTER);
         StatusLed breakerLed = new StatusLed();
+        breakerLed.setMouseTransparent(true);
         breakerLed.setAlignment(Pos.BOTTOM_CENTER);
         breakerLed.setStatus("ok");          
         breaker.getChildren().addAll(display, breakerLed);
         GridPane.setRowIndex(breaker, 4);
         GridPane.setColumnIndex(breaker, line);
         if (line % 2 == 0) {
-            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().setBreakerLight(breakerLed);
+            manager.getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().setBreakerLight(breakerLed);
             breaker.setTranslateX(30);
         } else {
-            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().setBreakerLight(breakerLed);
+            manager.getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().setBreakerLight(breakerLed);
             breaker.setTranslateX(-30);
         }
         return breaker;
@@ -343,17 +349,16 @@ public class InitUI {
         breakerButton.setId("breakerButton" + line);
         breakerButton.setMaxSize(43, 22);
         breakerButton.setMinSize(43, 22);
-        
         if (line % 2 == 0) {
             breakerButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
-                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().resetBreaker();
+                    manager.getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().resetBreaker();
                 }
             });
         } else {
             breakerButton.setOnAction(new EventHandler<ActionEvent>() {
                 @Override public void handle(ActionEvent e) {
-                    Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().resetBreaker();
+                    manager.getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().resetBreaker();
                 }
             });
         }
@@ -361,10 +366,10 @@ public class InitUI {
         GridPane.setColumnIndex(breakerButton, line);
         breakerButton.toFront();
         if (line % 2 == 0) {
-            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().setBreakerButton(breakerButton);
+            manager.getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().setBreakerButton(breakerButton);
             breakerButton.setTranslateX(30);
         } else {
-            Main.getPowerManager().getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().setBreakerButton(breakerButton);
+            manager.getPowerChannel(Math.floorDiv(line, 2)).getRightBreaker().setBreakerButton(breakerButton);
             breakerButton.setTranslateX(-30);
         }
         return breakerButton;
@@ -437,8 +442,8 @@ public class InitUI {
         balanceControl.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                Main.getPowerManager().getPowerChannel(channel).setBalancerValue(new SimpleIntegerProperty(newValue.intValue() - 64));
-                Main.getPowerManager().getPowerChannel(channel).updateOutput();
+                manager.getPowerChannel(channel).setBalancerValue(new SimpleIntegerProperty(newValue.intValue() - 64));
+                manager.getPowerChannel(channel).updateOutput();
             }
         });
         return balanceControl;
@@ -512,41 +517,55 @@ public class InitUI {
         GridPane.setRowIndex(gauge, 3);
         GridPane.setColumnIndex(gauge, channel * 2);
         GridPane.setColumnSpan(gauge, 2);
+        powerchannel.setBalanceGauge(gauge);
         return gauge;     
     }
     
-    public static Label createChannelOutputGauge(int channel, domain.PowerChannel powerchannel) {   
-     
-    Label channelGauge = new Label();
-   /*Gauge channelGauge = GaugeBuilder  
-     .create()  
-     .skinType(Gauge.SkinType.LCD)
-     .prefSize(200,100) // Set the preferred size of the control  
-     // Related to Foreground Elements  
-     .foregroundBaseColor(Color.BLACK)  // Defines a color foreground elements  
-     // Related to Title Text  
-     .title("Channel power") // Set the text for the title  
-     .titleColor(Color.BLACK) // Define the color for the title text       
-     // Related to Unit Text  
-     .unit("%") // Set the text for the unit  
-     .unitColor(Color.BLACK) // Define the color for the unit  
-     // Related to Value Text  
-     .valueColor(Color.BLACK) // Define the color for the value text  
-     .decimals(1) // Set the number of decimals for the value/lcd text  
-     // Related to LCD  
-     .lcdVisible(false) // Display a LCD instead of the plain value text  
-     .lcdDesign(LcdDesign.STANDARD) // Set the design for the LCD  
-     .lcdFont(LcdFont.DIGITAL_BOLD) // Set the font for the LCD  
-     // Related to scale  
-     // Related to Value  
-     .animated(false) // Needle will be animated  
-     .animationDuration(500)  // Speed of the needle in milliseconds (10 - 10000 ms)  
-     .build(); */
+    public static Gauge createChannelOutputGauge(int channel, domain.PowerChannel powerchannel) {   
+        Gauge channelGauge = GaugeBuilder  
+        .create()  
+        .minSize(100,100)
+        .prefSize(150,150) // Set the preferred size of the control  
+        .foregroundBaseColor(Color.BLACK)  // Defines a color foreground elements  
+        .title("Output power") // Set the text for the title  
+        .titleColor(Color.BLACK) // Define the color for the title text       
+        .unit("%") // Set the text for the unit  
+        .unitColor(Color.BLACK) // Define the color for the unit  
+        .valueColor(Color.BLACK) // Define the color for the value text  
+        .decimals(0) // Set the number of decimals for the value/lcd text  
+        .minValue(0) // Set the start value of the scale  
+        .maxValue(120) // Set the end value of the scale  
+        .startAngle(340) // Start angle of your scale (bottom -> 0, direction -> CCW)  
+        .angleRange(300) // Angle range of your scale starting from the start angle    
+        .tickLabelColor(Color.BLACK) // Color for tick labels  
+        .majorTickMarksVisible(true) // Major tick marks should be visible  
+        .majorTickMarkType(TickMarkType.LINE) // LINE, DOT, TRIANGLE, TICK_LABEL  
+        .majorTickMarkColor(Color.BLACK) // Color for the major tick marks  
+        .mediumTickMarksVisible(true) // Medium tick marks should be visible  
+        .mediumTickMarkType(TickMarkType.LINE) // LINE, DOT, TRIANGLE  
+        .mediumTickMarkColor(Color.BLACK) // Color for the medium tick marks  
+        .minorTickMarksVisible(true) // Minor tick marks should be visible  
+        .minorTickMarkType(TickMarkType.LINE) // LINE, DOT, TRIANGLE  
+        .minorTickMarkColor(Color.BLACK) // Color for minor tick marks  
+        .ledVisible(false) // LED should be visible  
+        .needleColor(Color.CRIMSON) // Color of the needle  
+        .knobType(Gauge.KnobType.STANDARD) // STANDARD, METAL, PLAIN, FLAT  
+        .knobColor(Color.LIGHTGRAY) // Color that should be used for the center knob  
+        .thresholdVisible(true) // Threshold indicator should be visible  
+        .threshold(100) // Value for the threshold  
+        .thresholdColor(Color.RED) // Color for the threshold  
+        .checkThreshold(false) // Check each value against threshold  
+        .onThresholdExceeded(thresholdEvent -> System.out.println("Threshold exceeded"))  
+        .onThresholdUnderrun(thresholdEvent -> System.out.println("Threshold underrun"))    
+        .gradientBarEnabled(false) // Gradient filled bar should be visible  
+        .animated(true) // Needle will be animated  
+        .animationDuration(500)  // Speed of the needle in milliseconds (10 - 10000 ms)  
+        .build();
      GridPane.setRowIndex(channelGauge, 2);
      GridPane.setColumnIndex(channelGauge, channel * 2);
      GridPane.setColumnSpan(channelGauge, 2);
      channelGauge.setId("channelOutputGauge" + channel);
-     channelGauge.textProperty().bind(powerchannel.getOutputPower().asString());
+     channelGauge.valueProperty().bind(powerchannel.getOutputPower());
      return channelGauge;   
     }
     

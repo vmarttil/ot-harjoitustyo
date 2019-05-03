@@ -237,9 +237,7 @@ public class Manager {
         protected Task<Void> createTask() {
             return new Task<Void>() {
                 protected Void call() {
-                    
                     checkHeating();
-                    
                     return null;
                 }
             };

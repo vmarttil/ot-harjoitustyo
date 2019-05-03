@@ -7,6 +7,7 @@ package domainTest;
 
 import domain.Fluctuator;
 import domain.Oscillator;
+import java.util.Random;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -19,6 +20,13 @@ import static org.junit.Assert.*;
  * @author Ville
  */
 public class FluctuatorTest {
+    private int lines;
+    private domain.Manager manager;
+    private domain.PowerLine line;
+    private domain.PowerChannel channel;
+    private Fluctuator reactorFluctuator;
+    private Oscillator reactorLine;
+    private Random randomGenerator;
     
     public FluctuatorTest() {
     }
@@ -33,6 +41,15 @@ public class FluctuatorTest {
     
     @Before
     public void setUp() {
+        lines = 4;
+        manager = new domain.Manager(lines);
+        manager.createPowerLines(lines);
+        manager.createPowerChannels(lines / 2);
+        line = manager.getPowerLine(0);
+        channel = manager.getPowerChannel(0);
+        reactorLine = line.getReactorLine();
+        reactorFluctuator = line.getInputFluctuator();
+        randomGenerator = new Random(45138464);
     }
     
     @After
@@ -47,41 +64,43 @@ public class FluctuatorTest {
     
     @Test
     public void FluctuatorCreationVolatilityTest() {
-        Oscillator reactorLine = new Oscillator(100, 100, 0.0);
-        Fluctuator reactorFluctuator = new Fluctuator(reactorLine, 10);
-        assertEquals(10, reactorFluctuator.getVolatility());
+        assertEquals(5, reactorFluctuator.getVolatility());
     }
     
     @Test
     public void FluctuatorVolatilityChangeTest() {
-        Oscillator reactorLine = new Oscillator(100, 100, 0.0);
-        Fluctuator reactorFluctuator = new Fluctuator(reactorLine, 10);
         reactorFluctuator.setVolatility(20);
         assertEquals(20, reactorFluctuator.getVolatility());
     }
     
     @Test
+    public void FluctuatorFluctuateOscillatorFrequencyTest() {
+        reactorFluctuator.fluctuateFrequency(100, new Random(45138464));
+        assertEquals(98, reactorLine.getCurrentFrequency().intValue());
+    }
+    
+    @Test
     public void FluctuatorFluctuateOscillatorAmplitudeTest() {
-        Oscillator reactorLine = new Oscillator(100, 100, 0.0);
-        Fluctuator reactorFluctuator = new Fluctuator(reactorLine, 10);
-        reactorFluctuator.fluctuateAmplitude(50);
-        assertNotEquals(100, reactorLine.getCurrentAmplitude().intValue());
+        reactorFluctuator.fluctuateAmplitude(50, new Random(341364));
+        assertEquals(79, reactorLine.getCurrentAmplitude().intValue());
+    }
+    
+    @Test
+    public void FluctuatorFluctuateOscillatorPhaseTest() {
+        reactorFluctuator.fluctuatePhase(70, new Random(478648));
+        assertEquals(-0.659, reactorLine.getCurrentPhase().doubleValue(),0.001);
     }
     
     @Test
     public void FluctuatorFluctuateOscillatorAmplitudeCheckFrequencyTest() {
-        Oscillator reactorLine = new Oscillator(100, 100, 0.0);
-        Fluctuator reactorFluctuator = new Fluctuator(reactorLine, 10);
         reactorFluctuator.fluctuateAmplitude();
         assertEquals(100, reactorLine.getCurrentFrequency().intValue());
     }
     
     @Test
     public void FluctuatorFluctuateAllTest() {
-        Oscillator reactorLine = new Oscillator(100, 100, 0.0);
-        Fluctuator reactorFluctuator = new Fluctuator(reactorLine, 10);
-        reactorFluctuator.fluctuateAll(50);
-        assertNotEquals(200.0, reactorLine.getCurrentAmplitude().intValue() + reactorLine.getCurrentFrequency().intValue() + reactorLine.getCurrentPhase().doubleValue(),0.1);
+        reactorFluctuator.fluctuateAll(90, new Random(4513344));
+        assertEquals(182.759, reactorLine.getCurrentAmplitude().intValue() + reactorLine.getCurrentFrequency().intValue() + reactorLine.getCurrentPhase().doubleValue(),0.001);
     }
     
 }

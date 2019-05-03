@@ -60,7 +60,7 @@ public class Fluctuator {
      * the default volatility of the fluctuator.
      */
     public void fluctuateFrequency() {
-        fluctuateFrequency(this.volatility);
+        fluctuateFrequency(this.volatility, this.randomGenerator);
     }
     
     /**
@@ -69,6 +69,17 @@ public class Fluctuator {
      * @param volatility the volatility to be used for this fluctuation event
      */
     public void fluctuateFrequency(int volatility) {
+        fluctuateFrequency(volatility, this.randomGenerator);
+    }
+    
+    /**
+     * The method triggers the fluctuation of the oscillator's frequency, using 
+     * the specified volatility and the specified random generator.
+     * @param volatility the volatility to be used for this fluctuation event
+     * @param randomGenerator the random generator to be used for this 
+     * fluctuation event
+     */
+    public void fluctuateFrequency(int volatility, Random randomGenerator) {
         int newFrequency = oscillator.getCurrentFrequency().intValue();
         int baseFrequency = oscillator.getBaseFrequency();
         int currentFrequency = oscillator.getCurrentFrequency().intValue();
@@ -89,12 +100,14 @@ public class Fluctuator {
         oscillator.setCurrentFrequency(newFrequency);
     }
     
+    
+    
     /**
      * The method triggers the fluctuation of the oscillator's amplitude, using 
      * the default volatility of the fluctuator.
      */
     public void fluctuateAmplitude() {
-        fluctuateAmplitude(this.volatility);
+        fluctuateAmplitude(this.volatility, this.randomGenerator);
     }
     
     /**
@@ -103,6 +116,17 @@ public class Fluctuator {
      * @param volatility the volatility to be used for this fluctuation event
      */
     public void fluctuateAmplitude(int volatility) {
+        fluctuateAmplitude(volatility, this.randomGenerator);
+    }
+    
+    /**
+     * The method triggers the fluctuation of the oscillator's frequency, using 
+     * the specified volatility and the specified random generator..
+     * @param volatility the volatility to be used for this fluctuation event
+     * @param randomGenerator the random generator to be used for this 
+     * fluctuation event
+     */
+    public void fluctuateAmplitude(int volatility, Random randomGenerator) {
         int newAmplitude = oscillator.getCurrentAmplitude().intValue();
         int baseAmplitude = oscillator.getBaseAmplitude();
         int currentAmplitude = oscillator.getCurrentAmplitude().intValue();
@@ -128,7 +152,7 @@ public class Fluctuator {
      * the default volatility of the fluctuator.
      */
     public void fluctuatePhase() {
-        fluctuatePhase(this.volatility);
+        fluctuatePhase(this.volatility, this.randomGenerator);
     }
     
     /**
@@ -137,6 +161,17 @@ public class Fluctuator {
      * @param volatility the volatility to be used for this fluctuation event
      */
     public void fluctuatePhase(int volatility) {
+        fluctuatePhase(volatility, this.randomGenerator);
+    }
+    
+    /**
+     * The method triggers the fluctuation of the oscillator's frequency, using 
+     * the specified volatility and the specified random generator.
+     * @param volatility the volatility to be used for this fluctuation event
+     * @param randomGenerator the random generator to be used for this 
+     * fluctuation event
+     */
+    public void fluctuatePhase(int volatility, Random randomGenerator) {
         double newPhase = oscillator.getCurrentPhase().doubleValue();
         double basePhase = 0;
         double currentPhase = oscillator.getCurrentPhase().doubleValue();
@@ -163,7 +198,7 @@ public class Fluctuator {
      * fluctuator.
      */
     public void fluctuateAll() {
-        fluctuateAll(this.volatility);
+        fluctuateAll(this.volatility, this.randomGenerator);
     }
     
     /**
@@ -172,8 +207,20 @@ public class Fluctuator {
      * @param volatility the volatility to be used for this fluctuation event
      */
     public void fluctuateAll(int volatility) {
-        fluctuateFrequency(volatility);
-        fluctuateAmplitude(volatility);
-        fluctuatePhase(volatility);
+        fluctuateAll(volatility, this.randomGenerator);
+    }
+    
+    /**
+     * The method triggers the simultaneous fluctuation of the oscillator's 
+     * frequency, amplitude and phase using the specified volatility and the 
+     * specified random generator.
+     * @param volatility the volatility to be used for this fluctuation event
+     * @param randomGenerator the random generator to be used for this 
+     * fluctuation event
+     */
+    public void fluctuateAll(int volatility, Random randomGenerator) {
+        fluctuateFrequency(volatility, randomGenerator);
+        fluctuateAmplitude(volatility, randomGenerator);
+        fluctuatePhase(volatility, randomGenerator);
     }
 }
