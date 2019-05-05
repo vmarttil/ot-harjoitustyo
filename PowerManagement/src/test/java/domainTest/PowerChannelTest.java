@@ -60,6 +60,7 @@ public class PowerChannelTest {
         manager = new domain.Manager(lines);
         manager.createPowerLines(lines);
         manager.createPowerChannels(lines / 2);
+        manager.createMainOutputs(lines / 2);
         leftPowerLine = manager.getPowerLine(0);
         rightPowerLine = manager.getPowerLine(1);
         channel = manager.getPowerChannel(0);
@@ -75,7 +76,7 @@ public class PowerChannelTest {
         leftBreaker.setBreakerButton(leftBreakerButton);
         rightBreaker.setBreakerLight(rightBreakerLight);
         rightBreaker.setBreakerButton(rightBreakerButton);
-        
+        manager.createReactorService();
     }
     
     @After

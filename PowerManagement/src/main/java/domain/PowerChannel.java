@@ -183,6 +183,8 @@ public class PowerChannel {
         } else {
             this.balanceGauge.setLedOn(false);
         }
+        // Update main output
+        this.manager.calculateOutputValues();
         // Calculate heat production or dissipation in the breakers
         this.leftBreaker.calculateHeatDelta();
         this.rightBreaker.calculateHeatDelta();

@@ -21,6 +21,8 @@ import javafx.geometry.Orientation;
 import static javafx.geometry.Orientation.HORIZONTAL;
 import static javafx.geometry.Orientation.VERTICAL;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
+import static javafx.print.PrintColor.COLOR;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -32,10 +34,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 
 /**
  *
@@ -50,15 +55,15 @@ public class InitUI {
         // Position the manager pane at the center of the screen, both vertically and horizontally
         managerPane.setAlignment(Pos.CENTER);
         // Set a padding of 60px on each side
-        managerPane.setPadding(new Insets(30, 30, 30, 30));
+        managerPane.setPadding(new Insets(10, 10, 10, 10));
         // Set the horizontal gap between columns
         managerPane.setHgap(20);
         // Set the vertical gap between rows
-        managerPane.setVgap(10);
+        managerPane.setVgap(0);
         // Add column constraints
         for (int i = 0; i < columns; i++) {
             ColumnConstraints column = new ColumnConstraints();
-            column.setPercentWidth(25);
+            column.setPercentWidth(100 / columns);
             column.setHalignment(HPos.CENTER);
             managerPane.getColumnConstraints().add(column);
         }
@@ -89,27 +94,34 @@ public class InitUI {
         GridPane.setRowIndex(powerLineControlBlock, 7);
         GridPane.setColumnIndex(powerLineControlBlock, column);
         powerLineControlBlock.setId("powerLineControls" + column);
+        controlButtonFrame.setTranslateY(5);
         
         HBox frequencyBlock = new HBox(-20);
         frequencyBlock.getChildren().addAll(frequencyLabel, frequencyControl);
         frequencyBlock.setAlignment(Pos.CENTER_LEFT);
         frequencyBlock.setMaxHeight(20);
+        controlButtonFrame.setTranslateY(5);
         
         HBox amplitudeBlock = new HBox(-20);
         amplitudeBlock.getChildren().addAll(amplitudeControl, amplitudeLabel);
         amplitudeBlock.setAlignment(Pos.CENTER_RIGHT);
         amplitudeBlock.setMaxHeight(20);
+        controlButtonFrame.setTranslateY(5);
         
         VBox phaseBlock = new VBox();
         phaseBlock.getChildren().addAll(phaseLabel, phaseControl);
         phaseBlock.setAlignment(Pos.CENTER);
+        phaseBlock.setTranslateY(10);
+        
+        Label lineLabel = new Label("Reactor Line " + (column + 1));
+        lineLabel.setStyle("-fx-font-size: 1.5em; -fx-font-weight: bold;");
         
         controlButtonFrame.setAlignment(Pos.CENTER);
-        powerLineControlBlock = formatControlPane(powerLineControlBlock, phaseBlock, frequencyBlock, controlButtonFrame, amplitudeBlock);
+        powerLineControlBlock = formatControlPane(powerLineControlBlock, phaseBlock, frequencyBlock, controlButtonFrame, amplitudeBlock, lineLabel);
         return powerLineControlBlock;
     }
     
-    private static BorderPane formatControlPane(BorderPane controlBlock, Node top, Node left, Node center, Node right) {
+    private static BorderPane formatControlPane(BorderPane controlBlock, Node top, Node left, Node center, Node right, Node bottom) {
         controlBlock.setTop(top);
         controlBlock.setAlignment(top, Pos.TOP_CENTER);
         controlBlock.setMargin(top, new Insets(0, 40, 0, 40));
@@ -122,6 +134,8 @@ public class InitUI {
         controlBlock.setAlignment(right, Pos.CENTER_RIGHT);
         controlBlock.setMargin(right, new Insets(0, 40, 0, 20));
         controlBlock.setMinWidth(350);
+        controlBlock.setBottom(bottom);
+        controlBlock.setAlignment(bottom, Pos.CENTER);
         return controlBlock;
     }
     
@@ -205,9 +219,9 @@ public class InitUI {
         StatusLed statusLed = Main.getStatusLeds()[column];
         ToggleButton offlineButton = Main.getOfflineButtons()[column];
         ToggleButton shutdownButton = Main.getShutdownButtons()[column];
-        VBox controlButtonFrame = new VBox(20);
+        VBox controlButtonFrame = new VBox(10);
         controlButtonFrame.getChildren().addAll(statusLed, offlineButton, shutdownButton);
-        controlButtonFrame.setAlignment(Pos.CENTER);
+        controlButtonFrame.setAlignment(Pos.BOTTOM_CENTER);
         return controlButtonFrame; 
     }
     
@@ -225,9 +239,9 @@ public class InitUI {
         oscilloscope.getChart().setCreateSymbols(false);
         oscilloscope.getChart().setLegendVisible(false);
         oscilloscope.getChart().setAnimated(true);
-        oscilloscope.getChart().setMinHeight(150);
-        oscilloscope.getChart().setPrefHeight(200);
-        oscilloscope.getChart().setMaxHeight(250);
+        oscilloscope.getChart().setMinHeight(100);
+        oscilloscope.getChart().setPrefHeight(120);
+        oscilloscope.getChart().setMaxHeight(150);
         GridPane.setRowIndex(oscilloscope, 6);
         GridPane.setColumnIndex(oscilloscope, column);
         return oscilloscope;
@@ -238,8 +252,9 @@ public class InitUI {
         .create()  
         .minSize(100,100)
         .prefSize(150,150) // Set the preferred size of the control  
+        .maxSize(150,150)
         .foregroundBaseColor(Color.BLACK)  // Defines a color foreground elements  
-        .title("Output power") // Set the text for the title  
+        .title("Line Output") // Set the text for the title  
         .titleColor(Color.BLACK) // Define the color for the title text       
         .unit("%") // Set the text for the unit  
         .unitColor(Color.BLACK) // Define the color for the unit  
@@ -314,10 +329,12 @@ public class InitUI {
         StatusLed breakerLed = new StatusLed();
         breakerLed.setMouseTransparent(true);
         breakerLed.setAlignment(Pos.BOTTOM_CENTER);
+        breakerLed.setTranslateY(-15);
         breakerLed.setStatus("ok");          
         breaker.getChildren().addAll(display, breakerLed);
         GridPane.setRowIndex(breaker, 4);
         GridPane.setColumnIndex(breaker, line);
+        breaker.setTranslateY(10);
         if (line % 2 == 0) {
             manager.getPowerChannel(Math.floorDiv(line, 2)).getLeftBreaker().setBreakerLight(breakerLed);
             breaker.setTranslateX(30);
@@ -339,12 +356,10 @@ public class InitUI {
         }
         Button breakerButton = new Button();
         breakerButton.setDisable(true);
-        breakerButton.setTranslateY(-10);
         breakerButton.setAlignment(Pos.CENTER);
         ImageView breakerButtonView = new ImageView(breakerButtonIcon);
         breakerButtonView.setFitHeight(20.0);
         breakerButtonView.setFitWidth(41.0);
-        //breakerButtonView.setTranslateX(-8);
         breakerButton.setGraphic(breakerButtonView);
         breakerButton.setId("breakerButton" + line);
         breakerButton.setMaxSize(43, 22);
@@ -425,12 +440,13 @@ public class InitUI {
         GridPane.setRowIndex(tempGauge, 4);
         GridPane.setColumnIndex(tempGauge, column);
         tempGauge.setId("tempGauge" + column);
+        tempGauge.setMouseTransparent(true);
         if (column% 2 == 0) {
             tempGauge.valueProperty().bind(powerchannel.getLeftBreaker().getBreakerHeat());
-            tempGauge.setTranslateX(-50);
+            tempGauge.setTranslateX(-60);
         } else {
             tempGauge.valueProperty().bind(powerchannel.getRightBreaker().getBreakerHeat());
-            tempGauge.setTranslateX(50);
+            tempGauge.setTranslateX(60);
         }
         return tempGauge;     
     }
@@ -455,9 +471,9 @@ public class InitUI {
         balanceLabel.setLabelFor(balanceControl);
         VBox balanceControlBlock = new VBox();
         balanceControlBlock.getChildren().addAll(balanceControl, balanceLabel);
-        balanceControlBlock.setAlignment(Pos.CENTER);
-        balanceControlBlock.setMaxHeight(50);
-        GridPane.setRowIndex(balanceControlBlock, 4);
+        balanceControlBlock.setAlignment(Pos.TOP_CENTER);
+        balanceControlBlock.setMaxHeight(130);
+        GridPane.setRowIndex(balanceControlBlock, 5);
         GridPane.setColumnIndex(balanceControlBlock, channel * 2);
         GridPane.setColumnSpan(balanceControlBlock, 2);
         return balanceControlBlock;
@@ -470,7 +486,7 @@ public class InitUI {
         .minSize(100,50) 
         .prefSize(150,75) // Set the preferred size of the control  
         .foregroundBaseColor(Color.BLACK)  // Defines a color foreground elements  
-        .title("Channel balance") // Set the text for the title  
+        .title("Balance") // Set the text for the title  
         .titleColor(Color.BLACK) // Define the color for the title text       
         .unit("") // Set the text for the unit  
         .unitColor(Color.BLACK) // Define the color for the unit  
@@ -514,7 +530,7 @@ public class InitUI {
         gauge.setId("balanceGauge" + channel);
         gauge.valueProperty().bind(powerchannel.getOutputBalance());
         gauge.setMouseTransparent(true);
-        GridPane.setRowIndex(gauge, 3);
+        GridPane.setRowIndex(gauge, 4);
         GridPane.setColumnIndex(gauge, channel * 2);
         GridPane.setColumnSpan(gauge, 2);
         powerchannel.setBalanceGauge(gauge);
@@ -523,11 +539,12 @@ public class InitUI {
     
     public static Gauge createChannelOutputGauge(int channel, domain.PowerChannel powerchannel) {   
         Gauge channelGauge = GaugeBuilder  
-        .create()  
+        .create()
         .minSize(100,100)
         .prefSize(150,150) // Set the preferred size of the control  
+        .maxSize(150,150)
         .foregroundBaseColor(Color.BLACK)  // Defines a color foreground elements  
-        .title("Output power") // Set the text for the title  
+        .title("Channel Output") // Set the text for the title  
         .titleColor(Color.BLACK) // Define the color for the title text       
         .unit("%") // Set the text for the unit  
         .unitColor(Color.BLACK) // Define the color for the unit  
@@ -561,13 +578,140 @@ public class InitUI {
         .animated(true) // Needle will be animated  
         .animationDuration(500)  // Speed of the needle in milliseconds (10 - 10000 ms)  
         .build();
-     GridPane.setRowIndex(channelGauge, 2);
+     GridPane.setRowIndex(channelGauge, 3);
      GridPane.setColumnIndex(channelGauge, channel * 2);
      GridPane.setColumnSpan(channelGauge, 2);
+     channelGauge.setTranslateY(30);
      channelGauge.setId("channelOutputGauge" + channel);
      channelGauge.valueProperty().bind(powerchannel.getOutputPower());
      return channelGauge;   
     }
+    
+    public static HBox createMainOutputControls(domain.Manager manager, int channels) {
+        HBox outputGauges = new HBox(40);
+        outputGauges.setAlignment(Pos.CENTER);
+        outputGauges.setPadding(new Insets(10, 150, 10, 150));
+        for (int i = 0; i < channels; i++) {
+            HBox outputBox = new HBox(0);
+            Slider adjuster = Main.getOutputAdjusters()[i];
+            adjuster.setTranslateY(15);
+            Gauge gauge = createOutputGauge(manager, i);
+            manager.setOutputGauge(i, gauge);
+            outputBox.getChildren().addAll(gauge, adjuster);
+            outputBox.setAlignment(Pos.CENTER);
+            VBox labeledOutputBox = new VBox(-30);
+            Label outputLabel = new Label("Output " + (i + 1));
+            outputLabel.maxHeight(10);
+            outputLabel.setTranslateY(-5);
+            outputLabel.setStyle("-fx-font-size: 0.8em;");
+            labeledOutputBox.setAlignment(Pos.CENTER);
+            labeledOutputBox.getChildren().addAll(outputBox, outputLabel);
+            outputGauges.getChildren().add(labeledOutputBox);
+        }
+        outputGauges.setAlignment(Pos.CENTER);
+        outputGauges.setTranslateY(-15);
+        GridPane.setRowIndex(outputGauges, 2);
+        GridPane.setColumnIndex(outputGauges, 1);
+        GridPane.setRowSpan(outputGauges, 2);
+        GridPane.setColumnSpan(outputGauges, 2);
+        return outputGauges;
+    }
+    
+    public static Gauge createOutputGauge(domain.Manager manager, int number) {
+        Gauge gauge = GaugeBuilder
+                .create()
+                .skinType(Gauge.SkinType.LINEAR)
+                .minSize(60,240)
+                .prefSize(60,240)
+                .maxSize(60,240)
+                .foregroundBaseColor(Color.BLACK) // Defines a color foreground elements  
+                .title("") // Set the text for the title  
+                .titleColor(Color.BLACK) // Define the color for the title text       
+                .unit("") // Set the text for the unit  
+                .unitColor(Color.TRANSPARENT) // Define the color for the unit  
+                .valueColor(Color.TRANSPARENT) // Define the color for the value text  
+                .decimals(0) // Set the number of decimals for the value/lcd text  
+                .minValue(0) // Set the start value of the scale  
+                .maxValue(150) // Set the end value of the scale  
+                .tickLabelColor(Color.BLACK) // Color for tick labels  
+                .majorTickMarksVisible(true) // Major tick marks should be visible  
+                .majorTickMarkType(TickMarkType.LINE) // LINE, DOT, TRIANGLE, TICK_LABEL  
+                .majorTickMarkColor(Color.BLACK) // Color for the major tick marks  
+                .mediumTickMarksVisible(true) // Medium tick marks should be visible  
+                .mediumTickMarkType(TickMarkType.LINE) // LINE, DOT, TRIANGLE  
+                .mediumTickMarkColor(Color.BLACK) // Color for the medium tick marks  
+                .minorTickMarksVisible(false) // Minor tick marks should be visible  
+                .minorTickMarkType(TickMarkType.LINE) // LINE, DOT, TRIANGLE  
+                .minorTickMarkColor(Color.BLACK) // Color for minor tick marks  
+                .ledVisible(false) // LED should be visible  
+                .ledColor(Color.rgb(255, 0, 0)) // Color of the LED  
+                .ledBlinking(false) // LED should blink  
+                .needleColor(Color.CRIMSON) // Color of the needle  
+                .knobType(Gauge.KnobType.STANDARD) // STANDARD, METAL, PLAIN, FLAT  
+                .knobColor(Color.CRIMSON) // Color that should be used for the center knob      
+                .sectionsVisible(true) // Sections will be visible  
+                .sections(new Section(100, 150, Color.RED)) // Sections that will be drawn  
+                .checkSectionsForValue(false) // Check current value against each section  
+                .markersVisible(false) // Markers will be visible  
+                .markers(new Marker(50, "Min", Color.YELLOW)) // Markers that will be drawn  
+                .animated(true) // Needle will be animated  
+                .animationDuration(500) // Speed of the needle in milliseconds (10 - 10000 ms)  
+                .build();
+        gauge.setId("OutputGauge" + number);
+        gauge.valueProperty().bind(manager.getOutputValue(number));
+        gauge.setPadding(new Insets(0, 0, 0, 0));
+        gauge.setMouseTransparent(true);
+        return gauge;
+    }
+    
+    public static Slider createOutputAdjuster(domain.Manager manager, int number) {
+        Slider outputAdjuster = makeSlider(0, 120, 100, VERTICAL, "Output " + number);
+        outputAdjuster.setShowTickLabels(true);
+        outputAdjuster.setShowTickMarks(true);
+        outputAdjuster.setMajorTickUnit(100);
+        outputAdjuster.setMinorTickCount(10);
+        outputAdjuster.setSnapToTicks(false);
+        outputAdjuster.setMinSize(30,143);
+        outputAdjuster.setPrefSize(30,143);
+        outputAdjuster.setMaxSize(30,143);
+        outputAdjuster.setPadding(new Insets(0, 0, 0, 0));
+        outputAdjuster.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                manager.setOutputAdjusterValue(number, newValue.intValue());
+                manager.calculateOutputValues();
+                manager.getPowerChannel(number).getLeftBreaker().calculateHeatDelta();
+                manager.getPowerChannel(number).getRightBreaker().calculateHeatDelta();
+            }
+        });
+        return outputAdjuster;
+    }
+    
+    public static StackPane createMainOutputDisplay(domain.Manager manager) {
+        Label output = new Label();
+        output.setMinSize(100,40);
+        output.setPrefSize(100,40);
+        output.setMaxSize(100,40);
+        output.setAlignment(Pos.CENTER);
+        output.textProperty().bind(manager.getMainOutputLevel().asString("%.2f"));
+        output.setId("MainOutputDisplay");    
+        output.setStyle("-fx-font-size: 2em; -fx-font-weight: bold;");
+        Rectangle frame = new Rectangle();
+        frame.setWidth(100);
+        frame.setHeight(40);
+        frame.setStroke(Color.LIGHTGRAY);
+        frame.setStrokeWidth(2.0);
+        frame.setFill(Color.TRANSPARENT);
+        StackPane outputDisplay = new StackPane();
+        outputDisplay.setAlignment(Pos.CENTER);
+        outputDisplay.getChildren().addAll(output, frame);
+        GridPane.setRowIndex(outputDisplay, 1);
+        GridPane.setColumnIndex(outputDisplay, 1);
+        GridPane.setColumnSpan(outputDisplay, 2);
+        outputDisplay.setMouseTransparent(true);
+        return outputDisplay;
+    }
+    
     
     private static Slider makeSlider(int minValue, int maxValue, int value, Orientation orientation, String label) {
         // Constructing and formatting the slider
@@ -580,16 +724,14 @@ public class InitUI {
         slider.setBlockIncrement(1);
         slider.setOrientation(orientation);
         if (orientation.equals(HORIZONTAL)) {
-            slider.setMinWidth(100);
-            slider.setPrefWidth(150);
-            slider.setMaxWidth(150);
+            slider.setMinWidth(80);
+            slider.setPrefWidth(100);
+            slider.setMaxWidth(120);
         } else {
-            slider.setMinHeight(150);
+            slider.setMinHeight(120);
             slider.setPrefHeight(150);
             slider.setMaxHeight(200);
         }
-        Label sliderLabel = new Label(label);
-        sliderLabel.setLabelFor(slider);
         return slider;
     }
     

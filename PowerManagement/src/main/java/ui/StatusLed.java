@@ -45,6 +45,7 @@ public class StatusLed extends StackPane {
         this.getChildren().add(this.display);
         this.slowBlinkTimeline = setupBlinkTimeline(500);
         this.fastBlinkTimeline = setupBlinkTimeline(200);
+        this.setMouseTransparent(true);
     }
     
     private Timeline setupBlinkTimeline(int interval) {

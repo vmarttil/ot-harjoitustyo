@@ -15,6 +15,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -46,6 +47,9 @@ public class Main extends Application {
     private static VBox[] balanceControlBlocks;
     private static Gauge[] balanceGauges;
     private static Gauge[] channelOutputGauges;
+    private static Slider[] outputAdjusters;
+    private static Gauge[] outputGauges;
+    private static StackPane mainOutputDisplay;
     
     /*
     @Override
@@ -61,13 +65,14 @@ public class Main extends Application {
         powerManager = new domain.Manager(lines);
         powerManager.createPowerLines(lines);
         powerManager.createPowerChannels(lines / 2);
-        powerManager.startReactorService();
-        powerManager.startHeatService();
+        powerManager.createMainOutputs(lines / 2);
         // Create user interface
         primaryStage.setTitle("Power Management Application");
         managerPane = createUserInterface(lines);
-        Scene scene = new Scene(managerPane, 1200, 800);
+        Scene scene = new Scene(managerPane, 1200, 800);        
         primaryStage.setScene(scene);
+        powerManager.startReactorService();
+        powerManager.startHeatService();
         primaryStage.show();
     }
     
@@ -97,8 +102,11 @@ public class Main extends Application {
         balanceControlBlocks = new VBox[lines / 2];        
         balanceGauges = new Gauge[lines / 2];
         channelOutputGauges = new Gauge[lines / 2];
+        outputAdjusters = new Slider[lines / 2];
+        outputGauges = new Gauge[lines / 2];
         generatePowerLineControls(lines);
         generatePowerChannelControls(lines / 2);
+        generateMainOutputControls(lines / 2);
         return managerPane;
     }
     
@@ -156,6 +164,21 @@ public class Main extends Application {
         }
     }
     
+    /**
+     * The method calls the initialisation methods for the UI elements related 
+     * to the main outputs and adds them as children to the main UI pane.
+     * @param channels the number of power channels in the power manager
+     */
+    private void generateMainOutputControls(int channels) {
+        for (int i = 0; i < channels; i++) {
+            outputAdjusters[i] = InitUI.createOutputAdjuster(powerManager, i);
+            outputGauges[i] = InitUI.createOutputGauge(powerManager, i);
+        }
+        HBox mainOutputControl = InitUI.createMainOutputControls(powerManager, channels);
+        this.mainOutputDisplay = InitUI.createMainOutputDisplay(powerManager);
+        managerPane.getChildren().addAll(mainOutputControl, mainOutputDisplay);
+    }
+    
     /*
     @Override
     public void stop() throws Exception {
@@ -169,8 +192,6 @@ public class Main extends Application {
        
     }
     
-    // Getters
-
     /**
      * The methods returns the power manager object responsible for creating, 
      * coordinating and interlinking the application logic components 
@@ -326,11 +347,29 @@ public class Main extends Application {
     
     /**
      * The method returns an array containing references to the power output
-     * gauges of each power channel (temporarily as Label objects).
+     * gauges of each power channel as Gauge objects.
      * @return array of temperature gauges
      */
     public static Gauge[] getChannelOutputGauges() {
         return channelOutputGauges;
+    }
+    
+    /**
+     * The method returns an array containing references to the output
+     * adjusters of each output and Slider objects.
+     * @return array of adjuster sliders
+     */
+    public static Slider[] getOutputAdjusters() {
+        return outputAdjusters;
+    }
+    
+    /**
+     * The method returns an array containing references to the adjusted output
+     * gauges of each output as Gauge objects.
+     * @return array of output gauges
+     */
+    public static Gauge[] getOutputGauges() {
+        return outputGauges;
     }
     
 }

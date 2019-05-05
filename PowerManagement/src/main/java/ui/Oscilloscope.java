@@ -32,7 +32,7 @@ public class Oscilloscope extends StackPane {
         this.xAxis = new NumberAxis(0 , timeframe, 10);
         this.yAxis = new NumberAxis(-1 * scale, scale, 20);
         SmoothedChart<Number, Number> oscilloscopeChart = new SmoothedChart<>(this.xAxis, this.yAxis);
-        oscilloscopeChart.setTitle("Reactor Line " + (column + 1));
+        // oscilloscopeChart.setTitle("Reactor Line " + (column + 1));
         oscilloscopeChart.setData(powerLine.getOutputData());
         oscilloscopeChart.setPadding(new Insets(-10, 0, -20, 0));
         return oscilloscopeChart;

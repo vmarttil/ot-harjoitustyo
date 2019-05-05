@@ -55,6 +55,7 @@ public class PowerLineTest {
         manager = new domain.Manager(lines);
         manager.createPowerLines(lines);
         manager.createPowerChannels(lines / 2);
+        manager.createMainOutputs(lines / 2);
         line = manager.getPowerLine(0);
         statusLed = new ui.StatusLed();
         shutdownButton = new ToggleButton();
@@ -67,7 +68,7 @@ public class PowerLineTest {
         channel = manager.getPowerChannel(0);
         balanceGauge = GaugeBuilder.create().build();
         channel.setBalanceGauge(balanceGauge);
-        
+        manager.createReactorService();
     }
     
     @After
@@ -110,10 +111,25 @@ public class PowerLineTest {
     }
     
     @Test
+    public void NoOfflineWhileShutdownTest() {
+        line.getShutdownButton().setSelected(true);
+        line.setOffline();
+        assertEquals(true, line.isOnline());
+    }
+    
+    @Test
     public void OffOnlinePowerOutputTest() {
         line.setOffline();
         line.setOnline();
         assertEquals(100.0, line.getOutputPower().doubleValue(),0.1);
+    }
+    
+    @Test
+    public void NoOnlineWhileShutdownTest() {
+        line.setOffline();
+        line.getShutdownButton().setSelected(true);
+        line.setOnline();
+        assertEquals(false, line.isOnline());
     }
     
     @Test
@@ -126,6 +142,14 @@ public class PowerLineTest {
     public void UnstableLightTest() {
         line.setUnstable();
         assertEquals("alert", statusLed.getstatus());
+    }
+    
+    @Test
+    public void UnstableWhileOfflineNoLightTest() {
+        line.getShutdownButton().setSelected(false);
+        line.setOffline();
+        line.setUnstable();
+        assertEquals("warning", statusLed.getstatus());
     }
     
     @Test

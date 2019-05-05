@@ -48,8 +48,6 @@ public class Breaker {
         this.breakerHeat = new SimpleDoubleProperty(0.0);
         this.breakerDelta = new SimpleDoubleProperty(0.0);
     }
-
-    // Getters
     
     /**
      * The method returns the current status of the breaker as a string, the 
@@ -110,7 +108,6 @@ public class Breaker {
         return this.breakerButton;
     }
 
-    // Setters
     /**
      * The method sets the status of the breaker to the value indicated by the 
      * parameter and sets the state of the status led in the UI accordingly. The 
@@ -163,28 +160,26 @@ public class Breaker {
         this.breakerButton = breakerButton;
     }
     
-    // Heat management methods
-    
     /**
      * The method calculates the current total heat accumulation per second 
      * for this breaker, based on the current values of the power circuit and 
      * sets it as the value of the breakerDelta variable.
      */
     public void calculateHeatDelta() {
-        double heatDelta = 0;
+        double heatDelta = 0.0;
         if ((this.status.equals("ok") || this.status.equals("warning")) && this.line.isOnline() == true) {
             // Over- or underdrive heat factor
-            heatDelta = heatDelta + ((this.line.getInputPower() - 100.0) / 10);
+            heatDelta = heatDelta + ((this.line.getInputPower() - 100.0) / 5.0);
             // Irregularity heat factor
-            heatDelta = heatDelta + (this.line.getRms() / 10);
+            heatDelta = heatDelta + (this.line.getRms() / 10.0);
             // Instability heat factor
             if (this.line.isUnstable() == true) {
-                heatDelta = 5 * heatDelta;
+                heatDelta = 3.0 * heatDelta;
             }
             heatDelta = heatDelta + calculateImbalanceHeat();
         }
         // Power draw heat factor
-        heatDelta = heatDelta - ((120 - this.manager.getMainOutputLevel()) / 10);
+        heatDelta = heatDelta + this.manager.calculateHeatDeltaComponent(this.channel.getNumber());
         this.breakerDelta.set(heatDelta);
     }
     
@@ -225,7 +220,7 @@ public class Breaker {
             setStatus("hot");
         } else if (this.breakerHeat.doubleValue() >= 0.8 * this.breakThreshold && getStatus().equals("ok")) {
             setStatus("warning");
-        } else if (this.status.equals("hot") && this.breakerHeat.doubleValue() < 800 && getBreakerButton().isDisabled() == true) {
+        } else if (this.status.equals("hot") && this.breakerHeat.doubleValue() < 0.8 * this.breakThreshold && getBreakerButton().isDisabled() == true) {
             setStatus("broken");
             getBreakerButton().setDisable(false);
         }

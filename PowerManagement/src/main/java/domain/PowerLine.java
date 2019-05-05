@@ -205,7 +205,7 @@ public class PowerLine {
     public void setUnstable() {
         this.unstable = true;
         this.unstableTimeline.play();
-        if (this.offlineButton.isSelected() == false) {
+        if (this.online == true) {
             this.statusLed.setStatus("alert");
             this.statusLed.setFastBlink(true);
         }
@@ -430,11 +430,11 @@ public class PowerLine {
             } else {
                 setOutputPower(0);
             }
-            if (getOutputPower().doubleValue() > 100.0) {
+            /*if (getOutputPower().doubleValue() > 100.0) {
                 this.lineOutputGauge.setLedOn(true);
             } else {
                 this.lineOutputGauge.setLedOn(false);
-            }
+            }*/
         }
         channel.updateOutput();
         if (overshoot == true) {
