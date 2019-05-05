@@ -76,6 +76,16 @@ public class Main extends Application {
         primaryStage.show();
     }
     
+    
+    /**
+     * The method exports all unexported logs to the log file upon closing.
+     */
+    @Override
+    public void stop(){
+        System.out.println("Saving logs to file.");
+        getPowerManager().getJSONLogging().exportLogContents();
+    }
+    
     /**
      * The method creates arrays for storing references to all of the UI 
      * elements and calls methods that generate the UI elements and store 

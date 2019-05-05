@@ -56,18 +56,28 @@ public class PowerLineTest {
         manager.createPowerLines(lines);
         manager.createPowerChannels(lines / 2);
         manager.createMainOutputs(lines / 2);
+        for (int i = 0; i < lines; i++) {
+            manager.getPowerLine(i).setStatusLed(new ui.StatusLed());
+        }
+        for (int i = 0; i < lines; i++) {
+            manager.getPowerLine(i).setOfflineButton(new ToggleButton());
+        }
+        for (int i = 0; i < lines; i++) {
+            manager.getPowerLine(i).setShutdownButton(new ToggleButton());
+        }
+        for (int i = 0; i < lines; i++) {
+            manager.getPowerLine(i).setLineOutputGauge(GaugeBuilder.create().build());
+        }
         line = manager.getPowerLine(0);
-        statusLed = new ui.StatusLed();
-        shutdownButton = new ToggleButton();
-        offlineButton = new ToggleButton();
-        lineOutputGauge = GaugeBuilder.create().build();
-        line.setStatusLed(statusLed);
-        line.setShutdownButton(shutdownButton);
-        line.setOfflineButton(offlineButton);
-        line.setLineOutputGauge(lineOutputGauge);
+        statusLed = manager.getPowerLine(0).getStatusLed();
+        shutdownButton = manager.getPowerLine(0).getShutdownButton();
+        offlineButton = manager.getPowerLine(0).getOfflineButton();
+        lineOutputGauge = manager.getPowerLine(0).getLineOutputGauge();
+        for (int i = 0; i < lines / 2; i++) {
+            manager.getPowerChannel(i).setBalanceGauge(GaugeBuilder.create().build());
+        }
         channel = manager.getPowerChannel(0);
-        balanceGauge = GaugeBuilder.create().build();
-        channel.setBalanceGauge(balanceGauge);
+        balanceGauge = manager.getPowerChannel(0).getBalanceGauge();
         manager.createReactorService();
     }
     

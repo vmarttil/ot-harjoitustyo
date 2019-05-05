@@ -41,6 +41,12 @@ public class PowerChannelTest {
     private Button leftBreakerButton;
     private Button rightBreakerButton;
     private Gauge balanceGauge;
+    private domain.PowerLine line;
+    private ui.StatusLed statusLed;
+    private ToggleButton offlineButton;
+    private ToggleButton shutdownButton;
+    private Gauge lineOutputGauge;
+    
     
     
     public PowerChannelTest() {
@@ -61,21 +67,38 @@ public class PowerChannelTest {
         manager.createPowerLines(lines);
         manager.createPowerChannels(lines / 2);
         manager.createMainOutputs(lines / 2);
-        leftPowerLine = manager.getPowerLine(0);
-        rightPowerLine = manager.getPowerLine(1);
+        for (int i = 0; i < lines; i++) {
+            manager.getPowerLine(i).setStatusLed(new ui.StatusLed());
+        }
+        for (int i = 0; i < lines; i++) {
+            manager.getPowerLine(i).setOfflineButton(new ToggleButton());
+        }
+        for (int i = 0; i < lines; i++) {
+            manager.getPowerLine(i).setShutdownButton(new ToggleButton());
+        }
+        for (int i = 0; i < lines; i++) {
+            manager.getPowerLine(i).setLineOutputGauge(GaugeBuilder.create().build());
+        }
+        line = manager.getPowerLine(0);
+        statusLed = manager.getPowerLine(0).getStatusLed();
+        shutdownButton = manager.getPowerLine(0).getShutdownButton();
+        offlineButton = manager.getPowerLine(0).getOfflineButton();
+        lineOutputGauge = manager.getPowerLine(0).getLineOutputGauge();
+        for (int i = 0; i < lines / 2; i++) {
+            manager.getPowerChannel(i).setBalanceGauge(GaugeBuilder.create().build());
+        }
+        for (int i = 0; i < lines / 2; i++) {
+            manager.getPowerChannel(i).getLeftBreaker().setBreakerLight(new ui.StatusLed());
+            manager.getPowerChannel(i).getRightBreaker().setBreakerLight(new ui.StatusLed());
+            manager.getPowerChannel(i).getLeftBreaker().setBreakerButton(new Button());
+            manager.getPowerChannel(i).getRightBreaker().setBreakerButton(new Button());
+        }
         channel = manager.getPowerChannel(0);
-        balanceGauge = GaugeBuilder.create().build();
-        channel.setBalanceGauge(balanceGauge);
-        leftBreaker = channel.getLeftBreaker();
-        rightBreaker = channel.getRightBreaker();
-        leftBreaker.setBreakerLight(leftBreakerLight);
-        rightBreaker.setBreakerLight(rightBreakerLight);
-        leftBreakerLight = new ui.StatusLed();
-        rightBreakerLight = new ui.StatusLed();
-        leftBreaker.setBreakerLight(leftBreakerLight);
-        leftBreaker.setBreakerButton(leftBreakerButton);
-        rightBreaker.setBreakerLight(rightBreakerLight);
-        rightBreaker.setBreakerButton(rightBreakerButton);
+        balanceGauge = manager.getPowerChannel(0).getBalanceGauge();
+        leftBreakerLight = manager.getPowerChannel(0).getLeftBreaker().getBreakerLight();
+        rightBreakerLight = manager.getPowerChannel(0).getRightBreaker().getBreakerLight();
+        leftBreakerButton = manager.getPowerChannel(0).getLeftBreaker().getBreakerButton();
+        rightBreakerButton = manager.getPowerChannel(0).getRightBreaker().getBreakerButton();
         manager.createReactorService();
     }
     

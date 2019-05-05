@@ -38,6 +38,7 @@ public class Manager {
     private Gauge mainOutputGauge;
     private double[] heatDeltaComponents;
     private long fluctuateTime;
+    public dao.JSONLogDao JSONLogging;
     
     
     /**
@@ -55,6 +56,7 @@ public class Manager {
         this.outputAdjusterValues = new SimpleIntegerProperty[lines / 2];
         this.outputLevels = new SimpleDoubleProperty[lines / 2];
         this.outputGauges = new Gauge[lines / 2];
+        this.JSONLogging = new dao.JSONLogDao(this);
     }
     
     /**
@@ -147,6 +149,15 @@ public class Manager {
      */    
     public long getFluctuateTime() {
         return this.fluctuateTime;
+    }
+    
+    /**
+     * The method returns the Dao object responsible for logging the events of 
+     * the power manager in JSON format and exporting them to a file.
+     * @return the JSON logger object
+     */    
+    public dao.JSONLogDao getJSONLogging() {
+        return this.JSONLogging;
     }
     
     /**
@@ -253,6 +264,7 @@ public class Manager {
         }
         this.mainOutputLevel.set(totalOutputLevel / this.outputLevels.length);        
         calculateReactorPeriodMultiplier();
+        JSONLogging.addLogEntry();
     }
     
     /**
