@@ -5,6 +5,7 @@ Sovelluksen tarkoituksena on mallintaa a pelillisesti avaruusaluksen virranhalli
 * [Vaatimusmäärittely](https://github.com/vmarttil/ot-harjoitustyo/blob/master/documentation/vaatimusmaarittely.md)
 * [Tuntikirjanpito](https://github.com/vmarttil/ot-harjoitustyo/blob/master/documentation/tuntikirjanpito.md)
 * [Arkkitehtuuri](https://github.com/vmarttil/ot-harjoitustyo/blob/master/documentation/arkkitehtuuri.md)
+* [Käyttöohje](https://github.com/vmarttil/ot-harjoitustyo/blob/master/documentation/kayttoohje.md)
 
 ## Komentorivitoiminnot
 
