@@ -32,6 +32,6 @@
 |  1.5. | 3    | mittareiden ja muiden graafisten elementtien toteutusta |
 |  2.5. | 3    | pääteasteen sovelluslogiikkaa |
 |  3.5  | 6    | pääteasteen toteuttaminen loppuun |
-|  4.5. | 12   | viimeisten bugien kanssa tappalemista ja javadoceja |
-|  5.5  | 14   | lokitoiminnallisuuden toteutus ja dokumentaation kirjoittamista |
-|       | 168  | Yhteensä |
+|  4.5. | 18   | viimeisten bugien kanssa tappalemista ja javadoceja |
+|  5.5  | 20   | lokitoiminnallisuuden toteutus ja dokumentaation kirjoittamista |
+|       | 180  | Yhteensä |
