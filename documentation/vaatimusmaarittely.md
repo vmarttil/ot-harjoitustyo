@@ -57,7 +57,7 @@ The UI was designed to be as immersive as possible, which is why it contains no 
 ## Additional functionality (future development)
 - more sophisticated UI
 - additional delays and timers to make offline and shutdown switches have a slightly delayed and gradual effect on power output
-- link to Emppty Epsilon  
+- http link to Empty Epsilon (or possibly porting to C++ and integration to the main program as a separate LARP-oriented branch)
   - the system regularly (every 1000 ms) updates the power level to EE using http POST requests
   - testing and development requires setting up an environment with multiple EE stations on separate PCs
 - damage in EE to any system can cause blowback to power output stage
