@@ -155,7 +155,7 @@ public class Manager {
      * the power manager in JSON format and exporting them to a file.
      * @return the JSON logger object
      */    
-    public dao.JsonLogDao getJSONLogging() {
+    public dao.JsonLogDao getJsonLogging() {
         return this.jsonLogging;
     }
     

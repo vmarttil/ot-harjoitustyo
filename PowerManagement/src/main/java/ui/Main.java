@@ -82,7 +82,7 @@ public class Main extends Application {
     @Override
     public void stop(){
         System.out.println("Saving logs to file.");
-        getPowerManager().getJSONLogging().exportLogContents();
+        getPowerManager().getJsonLogging().exportLogContents();
     }
     
     /**
