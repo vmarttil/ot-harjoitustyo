@@ -26,4 +26,12 @@
 | 24.4. | 6    | kanavien toimintalogiikan testaus ja lämmöntuottomekanismin suunnittelu ja aloitus |
 | 25.4. | 8    | lämmöntuottomekanismin toteutus |
 | 26.4. | 5    | testausta ja dokumentaation päivitys |
-|       | 121  | Yhteensä
+| 28.4. | 3    | testien hiomista |
+| 29.4. | 4    | käyttöliittymän työstöä |
+| 30.4  | 2    | käyttöliittymän testausta |
+|  1.5. | 3    | mittareiden ja muiden graafisten elementtien toteutusta |
+|  2.5. | 3    | pääteasteen sovelluslogiikkaa |
+|  3.5  | 6    | pääteasteen toteuttaminen loppuun |
+|  4.5. | 12   | viimeisten bugien kanssa tappalemista ja javadoceja |
+|  5.5  | 14   | lokitoiminnallisuuden toteutus ja dokumentaation kirjoittamista |
+|       | 168  | Yhteensä |
