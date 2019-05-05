@@ -15,12 +15,12 @@ import org.json.simple.JSONObject;
  *
  * @author Ville
  */
-public class JSONLogDao implements LogDao<JSONObject, JSONArray> {
+public class JsonLogDao implements LogDao<JSONObject, JSONArray> {
     public JSONArray logList;
     private domain.Manager manager;
     private int lines;
     
-    public JSONLogDao(domain.Manager manager) {
+    public JsonLogDao(domain.Manager manager) {
         this.logList = new JSONArray();
         this.manager = manager;
         this.lines = manager.getLines();

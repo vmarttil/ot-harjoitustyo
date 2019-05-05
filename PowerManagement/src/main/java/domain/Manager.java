@@ -6,7 +6,6 @@
 package domain;
 
 import eu.hansolo.medusa.Gauge;
-import java.security.Timestamp;
 import java.util.Random;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -38,7 +37,7 @@ public class Manager {
     private Gauge mainOutputGauge;
     private double[] heatDeltaComponents;
     private long fluctuateTime;
-    public dao.JSONLogDao JSONLogging;
+    public dao.JsonLogDao jsonLogging;
     
     
     /**
@@ -51,12 +50,12 @@ public class Manager {
         this.lines = lines;
         this.powerLines = new PowerLine[this.lines];
         this.powerChannels = new PowerChannel[this.lines / 2];  
-        this.baseReactorPeriod = 10;
+        this.baseReactorPeriod = 20;
         this.mainOutputLevel = new SimpleDoubleProperty(100.0);
         this.outputAdjusterValues = new SimpleIntegerProperty[lines / 2];
         this.outputLevels = new SimpleDoubleProperty[lines / 2];
         this.outputGauges = new Gauge[lines / 2];
-        this.JSONLogging = new dao.JSONLogDao(this);
+        this.jsonLogging = new dao.JsonLogDao(this);
     }
     
     /**
@@ -156,12 +155,12 @@ public class Manager {
      * the power manager in JSON format and exporting them to a file.
      * @return the JSON logger object
      */    
-    public dao.JSONLogDao getJSONLogging() {
-        return this.JSONLogging;
+    public dao.JsonLogDao getJSONLogging() {
+        return this.jsonLogging;
     }
     
     /**
-     * The method acreates a reactorService for the manager without starting it 
+     * The method creates a reactorService for the manager without starting it 
      * (for testing purposes).
      */    
     public void createReactorService() {
@@ -219,7 +218,7 @@ public class Manager {
     /**
      * The method creates a number of new power channel objects and stores 
      * references to them in an array.
-     * @param lines the number of power lines to create
+     * @param channels the number of power channels to create
      */
     public void createPowerChannels(int channels) {
         for (int i = 0; i < channels; i++) {
@@ -245,6 +244,8 @@ public class Manager {
      * caused by the level of power draw in the breakers of the channel, whose 
      * number is given as a parameter.
      * @param channel the number of the channel whose heat increase to calculate
+     * @return the amount of heat generation or dissipation caused by the 
+     * power draw
      */
     public double calculateHeatDeltaComponent(int channel) {
         return (120 - this.getPowerAdjusterValue(channel).intValue()) / -10.0;
@@ -264,7 +265,7 @@ public class Manager {
         }
         this.mainOutputLevel.set(totalOutputLevel / this.outputLevels.length);        
         calculateReactorPeriodMultiplier();
-        JSONLogging.addLogEntry();
+        jsonLogging.addLogEntry();
     }
     
     /**
@@ -293,8 +294,12 @@ public class Manager {
         setReactorPeriod((double) this.baseReactorPeriod * imbalanceMultiplier * powerDrawMultiplier);
     }
     
-    // Reactor service taking care of timing power fluctuation
-    
+    /**
+     * The method defines a runnable object which changes the interval at 
+     * which fluctuations occur depending on the circumstances and stops and 
+     * restarts the service so that the changes take place immediately.
+     * @param period the new interval at which fluctuations occur
+     */
     public void setReactorPeriod(double period) {
         Platform.runLater(new Runnable() {
             public void run() {
@@ -343,8 +348,10 @@ public class Manager {
      * fluctuations in the power line inputs at regular intervals.
      */
     private static class ReactorService extends ScheduledService<Void> {
+        @Override
         protected Task<Void> createTask() {
             return new Task<Void>() {
+                @Override
                 protected Void call() {
                     triggerFluctuation(Main.getPowerManager().getLines());
                     return null;
@@ -361,6 +368,7 @@ public class Manager {
      */
     static public void checkHeating() {
         Platform.runLater(new Runnable() {
+            @Override
             public void run() {
                 for (int i = 0; i < 2; i++) {
                     if (Main.getPowerManager().getPowerChannel(i).getLeftBreaker().getBreakerDelta().doubleValue() != 0.0) {
@@ -391,15 +399,12 @@ public class Manager {
     private static class HeatService extends ScheduledService<Void> {
         protected Task<Void> createTask() {
             return new Task<Void>() {
+                @Override
                 protected Void call() {
                     checkHeating();
                     return null;
                 }
             };
         }
-    }
-    
-    
+    }    
 }
-
-

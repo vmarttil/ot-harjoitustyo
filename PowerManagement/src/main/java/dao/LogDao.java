@@ -5,14 +5,14 @@
  */
 package dao;
 
-import java.sql.Timestamp;
-import java.util.*;
-
 /**
- *
+ * This interface defines a generic logging framework for the application, 
+ * defining the different values that are to be documented. The interface 
+ * can be implemented in various formats and media.
+ * 
  * @author Ville
  */
-public interface LogDao<O,A> {
+public interface LogDao<O, A> {
     
     double logMainOutputLevel();
     double logAdjustedOutputLevel(int number);

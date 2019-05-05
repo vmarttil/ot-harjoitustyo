@@ -21,8 +21,6 @@ import javafx.geometry.Orientation;
 import static javafx.geometry.Orientation.HORIZONTAL;
 import static javafx.geometry.Orientation.VERTICAL;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
-import static javafx.print.PrintColor.COLOR;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -34,13 +32,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 
 /**
  *
@@ -733,14 +729,5 @@ public class InitUI {
             slider.setMaxHeight(200);
         }
         return slider;
-    }
-    
-    
+    }    
 }
-
-
-
-
-
-
-

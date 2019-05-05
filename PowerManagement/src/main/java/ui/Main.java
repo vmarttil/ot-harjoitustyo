@@ -76,7 +76,6 @@ public class Main extends Application {
         primaryStage.show();
     }
     
-    
     /**
      * The method exports all unexported logs to the log file upon closing.
      */
@@ -185,7 +184,7 @@ public class Main extends Application {
             outputGauges[i] = InitUI.createOutputGauge(powerManager, i);
         }
         HBox mainOutputControl = InitUI.createMainOutputControls(powerManager, channels);
-        this.mainOutputDisplay = InitUI.createMainOutputDisplay(powerManager);
+        mainOutputDisplay = InitUI.createMainOutputDisplay(powerManager);
         managerPane.getChildren().addAll(mainOutputControl, mainOutputDisplay);
     }
     

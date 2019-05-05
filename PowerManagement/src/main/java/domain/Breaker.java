@@ -10,7 +10,6 @@ import java.util.TimerTask;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.control.Button;
-import ui.Main;
 
 /**
  * The class defines a power breaker that will monitor the cumulative heat 
@@ -233,6 +232,7 @@ public class Breaker {
         setStatus("resetting");
         Timer initialisingTimer = new Timer();
         TimerTask initialisingTask = new TimerTask() {
+            @Override
             public void run() {
                 finishResetBreaker();
             }
@@ -247,6 +247,7 @@ public class Breaker {
      */
     public void finishResetBreaker() {
         Platform.runLater(new Runnable() {
+            @Override
             public void run() {
                 setStatus("ok");
                 getBreakerButton().setDisable(true);
@@ -254,10 +255,3 @@ public class Breaker {
         });
     }
 }
-
-
-
-
-
-
-

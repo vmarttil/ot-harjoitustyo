@@ -80,7 +80,7 @@ public class Fluctuator {
      * fluctuation event
      */
     public void fluctuateFrequency(int volatility, Random randomGenerator) {
-        int newFrequency = oscillator.getCurrentFrequency().intValue();
+        int newFrequency;
         int baseFrequency = oscillator.getBaseFrequency();
         int currentFrequency = oscillator.getCurrentFrequency().intValue();
         int minFrequency = (int) Math.round((double) baseFrequency - 0.64 * baseFrequency);
@@ -99,8 +99,6 @@ public class Fluctuator {
         }
         oscillator.setCurrentFrequency(newFrequency);
     }
-    
-    
     
     /**
      * The method triggers the fluctuation of the oscillator's amplitude, using 
@@ -127,7 +125,7 @@ public class Fluctuator {
      * fluctuation event
      */
     public void fluctuateAmplitude(int volatility, Random randomGenerator) {
-        int newAmplitude = oscillator.getCurrentAmplitude().intValue();
+        int newAmplitude;
         int baseAmplitude = oscillator.getBaseAmplitude();
         int currentAmplitude = oscillator.getCurrentAmplitude().intValue();
         int minAmplitude = (int) Math.round((double) baseAmplitude - 0.64 * baseAmplitude);
@@ -172,7 +170,7 @@ public class Fluctuator {
      * fluctuation event
      */
     public void fluctuatePhase(int volatility, Random randomGenerator) {
-        double newPhase = oscillator.getCurrentPhase().doubleValue();
+        double newPhase;
         double basePhase = 0;
         double currentPhase = oscillator.getCurrentPhase().doubleValue();
         double minPhase = -(Math.PI);
